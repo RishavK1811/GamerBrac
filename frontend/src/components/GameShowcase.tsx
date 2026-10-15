@@ -53,38 +53,7 @@ const GAMES = [
   },
 ];
 
-const MOCK_TOURNAMENTS: MockTournamentPreview[] = [
-  {
-    id: 'tourney-1',
-    title: 'Firestorm Community Cup #1',
-    game: 'Free Fire MAX',
-    mode: 'Squad Battle Royale (48 Slots)',
-    slots: '38/48 Slots Filled',
-    entry: 'Free Entry',
-    schedule: 'Starts Saturday 6:00 PM IST',
-    status: 'Registration Open',
-  },
-  {
-    id: 'tourney-2',
-    title: 'Apex India BGMI Scrims Series',
-    game: 'BGMI',
-    mode: 'Squads (Erangel + Miramar)',
-    slots: '16/20 Teams Registered',
-    entry: 'Free Entry',
-    schedule: 'Starts Sunday 4:00 PM IST',
-    status: 'Upcoming',
-  },
-  {
-    id: 'tourney-3',
-    title: 'Radiant Strike South Asia',
-    game: 'VALORANT',
-    mode: '5v5 Single Elimination Bracket',
-    slots: '14/16 Teams Checked In',
-    entry: 'Free Entry',
-    schedule: 'Check-in Closes in 25 mins',
-    status: 'Check-in Live',
-  },
-];
+const MOCK_TOURNAMENTS: MockTournamentPreview[] = [];
 
 export const GameShowcase: React.FC = () => {
   const [selectedGame, setSelectedGame] = useState<string>('all');
@@ -163,50 +132,12 @@ export const GameShowcase: React.FC = () => {
         setLoadingLeaderboard(false);
       })
       .catch(() => {
-        // Fallback demo standings if tournament has no matches yet
-        setLeaderboardStandings([
-          {
-            rank: 1,
-            participant_id: 'p-1',
-            name: 'GodLike Esports',
-            tag: 'GODL',
-            matches_played: 3,
-            wins: 2,
-            total_kills: 24,
-            placement_points: 26,
-            kill_points: 24,
-            total_points: 50,
-          },
-          {
-            rank: 2,
-            participant_id: 'p-2',
-            name: 'Team Soul',
-            tag: 'SOUL',
-            matches_played: 3,
-            wins: 1,
-            total_kills: 19,
-            placement_points: 21,
-            kill_points: 19,
-            total_points: 40,
-          },
-          {
-            rank: 3,
-            participant_id: 'p-3',
-            name: 'Blind Esports',
-            tag: 'BLND',
-            matches_played: 3,
-            wins: 0,
-            total_kills: 14,
-            placement_points: 16,
-            kill_points: 14,
-            total_points: 30,
-          },
-        ]);
+        setLeaderboardStandings([]);
         setLoadingLeaderboard(false);
       });
   };
 
-  // If live API has tournaments, display those, otherwise fallback gracefully to MOCK_TOURNAMENTS
+  // Display live API tournaments only; do not substitute demo records.
   const hasLiveTournaments = apiTournaments.length > 0;
   const filteredMockTournaments =
     selectedGame === 'all'
@@ -279,7 +210,7 @@ export const GameShowcase: React.FC = () => {
               <Trophy className="w-5 h-5 text-violet-400" />
               <span>Current & Upcoming Events</span>
               <span className="text-xs font-semibold px-2 py-0.5 rounded bg-cyan-950/80 border border-cyan-800/50 text-cyan-300 ml-2">
-                {hasLiveTournaments ? 'Live Database' : 'Mock Preview'}
+                {tournamentError ? 'Connection Issue' : 'Live Database'}
               </span>
             </h3>
           </div>
@@ -315,7 +246,7 @@ export const GameShowcase: React.FC = () => {
           >
             <div className="flex items-center space-x-2">
               <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
-              <span>Live database offline or unreachable. Displaying fallback mock tournaments.</span>
+              <span>Could not load live tournaments. Please retry.</span>
             </div>
             <button
               type="button"
