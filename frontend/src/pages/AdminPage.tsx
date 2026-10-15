@@ -290,12 +290,13 @@ export const AdminPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 animate-entrance">
       {/* Super-Admin Header */}
-      <div className="p-8 rounded-3xl bg-[#0e101a] border border-amber-900/40 shadow-[0_0_35px_rgba(245,158,11,0.15)] flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="flex items-center space-x-5">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-600 to-rose-600 p-0.5 shadow-[0_0_20px_rgba(245,158,11,0.4)]">
-            <div className="w-full h-full bg-[#0d0e17] rounded-[14px] flex items-center justify-center text-amber-400">
+      <div className="p-8 rounded-3xl card-glass-heavy border border-amber-700/40 shadow-[0_0_40px_rgba(245,158,11,0.18)] flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-80 h-40 bg-amber-600/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="flex items-center space-x-5 relative z-10">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-600 to-rose-600 p-[1.5px] shadow-[0_0_24px_rgba(245,158,11,0.4)]">
+            <div className="w-full h-full bg-[#0a0b14] rounded-[14px] flex items-center justify-center text-amber-400">
               <Sliders className="w-8 h-8" />
             </div>
           </div>
@@ -304,7 +305,7 @@ export const AdminPage: React.FC = () => {
               <h1 className="text-2xl font-black text-white tracking-tight">
                 Platform Administration
               </h1>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-amber-950/80 border border-amber-800/60 text-amber-300">
+              <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-amber-950/90 border border-amber-600/60 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.3)]">
                 Super Admin
               </span>
             </div>
@@ -314,10 +315,10 @@ export const AdminPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-3 relative z-10">
           <Link
             to="/organizer"
-            className="px-4 py-2.5 rounded-xl bg-[#141624] hover:bg-[#1a1d30] border border-violet-900/40 text-gray-300 hover:text-white text-xs font-semibold uppercase tracking-wider flex items-center space-x-1.5 transition-all"
+            className="px-4 py-2.5 rounded-xl bg-[#111422] hover:bg-[#1a1d30] border border-violet-800/40 text-gray-300 hover:text-white text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 transition-all shadow-sm"
           >
             <span>Organizer Console</span>
             <ChevronRight className="w-3.5 h-3.5" />
@@ -329,7 +330,7 @@ export const AdminPage: React.FC = () => {
               else if (activeTab === 'reports') fetchReports();
               else if (activeTab === 'audit') fetchAuditLogs();
             }}
-            className="p-2.5 rounded-xl bg-[#141624] hover:bg-[#1a1d30] border border-violet-900/40 text-gray-400 hover:text-white transition-colors"
+            className="p-2.5 rounded-xl bg-[#111422] hover:bg-[#1a1d30] border border-violet-800/40 text-gray-400 hover:text-white transition-colors cursor-pointer"
             title="Refresh Data"
           >
             <RefreshCw className="w-4 h-4" />

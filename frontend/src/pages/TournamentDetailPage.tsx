@@ -510,23 +510,24 @@ export const TournamentDetailPage: React.FC = () => {
       </div>
 
       {/* Main Tournament Banner Card */}
-      <div className="p-8 rounded-3xl bg-[#0e101a] border border-violet-900/40 shadow-[0_0_35px_rgba(139,92,246,0.15)] space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="p-8 rounded-3xl card-glass-heavy border border-violet-700/35 shadow-[0_0_40px_rgba(139,92,246,0.18)] space-y-6 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-80 h-40 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="flex flex-wrap items-center justify-between gap-3 relative z-10">
           <div className="flex items-center space-x-3">
-            <span className="text-xs font-bold px-3 py-1 rounded-lg bg-cyan-950/80 border border-cyan-800/60 text-cyan-300">
+            <span className="text-xs font-black px-3 py-1 rounded-xl bg-cyan-950/80 border border-cyan-600/60 text-cyan-300 shadow-[0_0_12px_rgba(6,182,212,0.25)]">
               {tournament.game_title}
             </span>
-            <span className="text-xs font-bold px-3 py-1 rounded-lg bg-violet-950/80 border border-violet-800/60 text-violet-300 uppercase">
+            <span className="text-xs font-black px-3 py-1 rounded-xl bg-violet-950/80 border border-violet-700/60 text-violet-300 uppercase">
               {tournament.format}
             </span>
           </div>
 
-          <span className="text-xs font-bold px-3 py-1 rounded-lg bg-emerald-950/80 border border-emerald-800/60 text-emerald-300 uppercase">
-            {tournament.status.replace('_', ' ')}
+          <span className="text-xs font-black px-3 py-1 rounded-xl bg-emerald-950/80 border border-emerald-600/60 text-emerald-300 uppercase shadow-[0_0_12px_rgba(16,185,129,0.25)]">
+            {tournament.status.replace(/_/g, ' ')}
           </span>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
+        <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight relative z-10 leading-tight">
           {tournament.title}
         </h1>
 

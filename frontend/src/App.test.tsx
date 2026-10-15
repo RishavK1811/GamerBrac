@@ -77,7 +77,7 @@ describe('GamerBrac Frontend with Real API Integration', () => {
 
   it('renders GamerBrac brand header and navigation', async () => {
     render(<App />);
-    await screen.findByText(/FastAPI Health/i);
+    await screen.findByText(/BGMI National Championship 2026/i);
     expect(screen.getAllByText(/GAMERBRAC/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Tournaments/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Games/i).length).toBeGreaterThan(0);
@@ -86,7 +86,7 @@ describe('GamerBrac Frontend with Real API Integration', () => {
 
   it('renders hero section with esports call-to-actions', async () => {
     render(<App />);
-    await screen.findByText(/FastAPI Health/i);
+    await screen.findByText(/BGMI National Championship 2026/i);
     expect(
       screen.getByRole('heading', { level: 1, name: /COMPETE\. CONQUER\./i })
     ).toBeInTheDocument();
@@ -96,7 +96,7 @@ describe('GamerBrac Frontend with Real API Integration', () => {
 
   it('displays the three supported game titles', async () => {
     render(<App />);
-    await screen.findByText(/FastAPI Health/i);
+    await screen.findByText(/BGMI National Championship 2026/i);
     expect(screen.getAllByText('Free Fire MAX').length).toBeGreaterThan(0);
     expect(screen.getAllByText('BGMI').length).toBeGreaterThan(0);
     expect(screen.getAllByText('VALORANT').length).toBeGreaterThan(0);
@@ -104,7 +104,7 @@ describe('GamerBrac Frontend with Real API Integration', () => {
 
   it('displays role-based workflow for Player, Organizer, and Admin', async () => {
     render(<App />);
-    await screen.findByText(/FastAPI Health/i);
+    await screen.findByText(/BGMI National Championship 2026/i);
     expect(screen.getByText(/Competitor \/ Player/i)).toBeInTheDocument();
     expect(screen.getByText(/Tournament Organizer/i)).toBeInTheDocument();
     expect(screen.getByText(/Platform Admin/i)).toBeInTheDocument();
@@ -112,7 +112,7 @@ describe('GamerBrac Frontend with Real API Integration', () => {
 
   it('renders legal and publisher disclaimers in footer', async () => {
     render(<App />);
-    await screen.findByText(/FastAPI Health/i);
+    await screen.findByText(/BGMI National Championship 2026/i);
     expect(screen.getByText(/LEGAL & PUBLISHER NOTICE:/i)).toBeInTheDocument();
     expect(
       screen.getByText(/GamerBrac is an independent tournament management platform/i)
