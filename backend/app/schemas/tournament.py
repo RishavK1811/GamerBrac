@@ -22,9 +22,12 @@ class TournamentCreate(BaseModel):
     start_datetime: datetime
     rules: Optional[str] = Field(None, max_length=10000)
     prize_pool_description: Optional[str] = Field(None, max_length=2000)
+    is_free_entry: bool = True
+    entry_fee_per_player: int = Field(0, ge=0)
+    require_complete_teams: bool = False
 
     @model_validator(mode="after")
-    def validate_dates(self) -> "TournamentCreate":
+    def validate_tournament_fields(self) -> "TournamentCreate":
         if self.registration_deadline >= self.start_datetime:
             raise ValueError("registration_deadline must be before start_datetime")
         if self.check_in_deadline is not None:
@@ -34,6 +37,14 @@ class TournamentCreate(BaseModel):
                 raise ValueError(
                     "check_in_deadline must be after registration_deadline"
                 )
+        if not self.is_free_entry and self.entry_fee_per_player == 0:
+            self.entry_fee_per_player = 5
+        if self.entry_fee_per_player not in [0, 5, 10, 25, 50]:
+            raise ValueError(
+                f"entry_fee_per_player must be one of [0, 5, 10, 25, 50], got {self.entry_fee_per_player}"
+            )
+        if self.is_free_entry and self.entry_fee_per_player != 0:
+            raise ValueError("entry_fee_per_player must be 0 for free-entry tournaments")
         return self
 
 
@@ -48,6 +59,17 @@ class TournamentUpdate(BaseModel):
     start_datetime: Optional[datetime] = None
     rules: Optional[str] = Field(None, max_length=10000)
     prize_pool_description: Optional[str] = Field(None, max_length=2000)
+    is_free_entry: Optional[bool] = None
+    entry_fee_per_player: Optional[int] = Field(None, ge=0)
+    require_complete_teams: Optional[bool] = None
+
+    @model_validator(mode="after")
+    def validate_entry_fee(self) -> "TournamentUpdate":
+        if self.entry_fee_per_player is not None and self.entry_fee_per_player not in [0, 5, 10, 25, 50]:
+            raise ValueError(
+                f"entry_fee_per_player must be one of [0, 5, 10, 25, 50], got {self.entry_fee_per_player}"
+            )
+        return self
 
 
 class TournamentStatusUpdate(BaseModel):
@@ -92,11 +114,26 @@ class TournamentResponse(BaseModel):
     start_datetime: datetime
     organizer_id: str
     is_free_entry: bool
+    entry_fee_per_player: int = 0
+    require_complete_teams: bool = False
     rules: Optional[str]
     prize_pool_description: Optional[str]
     created_at: datetime
     updated_at: datetime
     participants: List[ParticipantSummary] = []
+
+    # Computed fields for capacities, participation, and prize pool preview
+    team_size: int = 1
+    team_entry_fee: int = 0
+    max_player_slots: int = 0
+    current_player_slots: int = 0
+    min_participants_30pct: int = 0
+    min_players_30pct: int = 0
+    confirmed_entries_count: int = 0
+    confirmed_players_count: int = 0
+    min_participation_met: bool = False
+    requires_cancellation: bool = False
+    prize_pool_preview: int = 0
 
 
 class TournamentListItem(BaseModel):
@@ -115,6 +152,67 @@ class TournamentListItem(BaseModel):
     start_datetime: datetime
     organizer_id: str
     is_free_entry: bool
+    entry_fee_per_player: int = 0
+    require_complete_teams: bool = False
+    team_size: int = 1
+    team_entry_fee: int = 0
+    max_player_slots: int = 0
+    min_participants_30pct: int = 0
+    confirmed_entries_count: int = 0
+    min_participation_met: bool = False
+
+
+# ---------------------------------------------------------------------------
+# Financial preview & Mode config schemas
+# ---------------------------------------------------------------------------
+
+class RankPayoutAllocation(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    rank: int
+    percentage: float
+    amount: int
+    award_type: str
+    award_semantics: str
+
+
+class TournamentFinancialPreview(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    tournament_id: str
+    tournament_title: str
+    is_free_entry: bool
+    entry_fee_per_player: int
+    team_size: int
+    team_entry_fee: int
+    confirmed_entries: int
+    eligible_participants_count: int
+    gross_collected_fees: int
+    prize_pool: int
+    prize_pool_percentage: float = 65.0
+    reserve_amount: int
+    reserve_percentage: float = 35.0
+    expected_costs: Optional[int] = None
+    cost_safety_warning: Optional[str] = None
+    is_projection_complete: bool = False
+    payout_allocations: List[RankPayoutAllocation] = []
+    disclaimer: str
+
+
+class GameModeConfigItem(BaseModel):
+    game_title: str
+    format: str
+    team_size: int
+    max_teams: int
+    max_player_slots: int
+    min_teams_30pct: int
+    min_players_30pct: int
+
+
+class PlatformModesConfigResponse(BaseModel):
+    modes: List[GameModeConfigItem]
+    allowed_entry_fees_per_player: List[int]
+    paid_tournaments_enabled: bool
 
 
 # ---------------------------------------------------------------------------

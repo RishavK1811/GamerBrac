@@ -114,8 +114,10 @@ class Tournament(Base):
         index=True,
     )
 
-    # Free-entry enforcement (always True in MVP)
+    # Free-entry enforcement & Entry fee configuration
     is_free_entry = Column(Boolean, default=True, nullable=False)
+    entry_fee_per_player = Column(Integer, default=0, nullable=False)
+    require_complete_teams = Column(Boolean, default=False, nullable=False)
 
     # Optional content fields
     rules = Column(Text, nullable=True)

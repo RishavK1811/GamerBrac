@@ -47,6 +47,19 @@ export interface ApiTournament {
   start_datetime: string;
   organizer_id: string;
   is_free_entry: boolean;
+  entry_fee_per_player?: number;
+  require_complete_teams?: boolean;
+  team_size?: number;
+  team_entry_fee?: number;
+  max_player_slots?: number;
+  current_player_slots?: number;
+  min_participants_30pct?: number;
+  min_players_30pct?: number;
+  confirmed_entries_count?: number;
+  confirmed_players_count?: number;
+  min_participation_met?: boolean;
+  requires_cancellation?: boolean;
+  prize_pool_preview?: number;
 }
 
 export interface LeaderboardEntry {
@@ -259,6 +272,9 @@ export interface TournamentCreateRequest {
   start_datetime: string;
   rules?: string;
   prize_pool_description?: string;
+  is_free_entry?: boolean;
+  entry_fee_per_player?: number;
+  require_complete_teams?: boolean;
 }
 
 export interface TournamentUpdateRequest {
@@ -270,6 +286,54 @@ export interface TournamentUpdateRequest {
   start_datetime?: string;
   rules?: string;
   prize_pool_description?: string;
+  is_free_entry?: boolean;
+  entry_fee_per_player?: number;
+  require_complete_teams?: boolean;
+}
+
+export interface RankPayoutAllocation {
+  rank: number;
+  percentage: number;
+  amount: number;
+  award_type: string;
+  award_semantics: string;
+}
+
+export interface TournamentFinancialPreview {
+  tournament_id: string;
+  tournament_title: string;
+  is_free_entry: boolean;
+  entry_fee_per_player: number;
+  team_size: number;
+  team_entry_fee: number;
+  confirmed_entries: number;
+  eligible_participants_count: number;
+  gross_collected_fees: number;
+  prize_pool: number;
+  prize_pool_percentage: number;
+  reserve_amount: number;
+  reserve_percentage: number;
+  expected_costs?: number | null;
+  cost_safety_warning?: string | null;
+  is_projection_complete: boolean;
+  payout_allocations: RankPayoutAllocation[];
+  disclaimer: string;
+}
+
+export interface GameModeConfigItem {
+  game_title: string;
+  format: string;
+  team_size: number;
+  max_teams: number;
+  max_player_slots: number;
+  min_teams_30pct: number;
+  min_players_30pct: number;
+}
+
+export interface PlatformModesConfigResponse {
+  modes: GameModeConfigItem[];
+  allowed_entry_fees_per_player: number[];
+  paid_tournaments_enabled: boolean;
 }
 
 export interface TournamentStatusUpdateRequest {

@@ -6,7 +6,7 @@ test.describe('A. Guest Browsing, Directory & Authentication', () => {
     await page.goto('/');
 
     // Check Hero elements
-    await expect(page.getByText('Production Ready')).toBeVisible();
+    await expect(page.getByText(/India's Community Esports Tournament Engine/i)).toBeVisible();
     await expect(page.getByRole('heading', { name: /CHOOSE YOUR BATTLEGROUND/i })).toBeVisible();
 
     // Check navbar links
@@ -56,8 +56,8 @@ test.describe('A. Guest Browsing, Directory & Authentication', () => {
 
     await expect(page).toHaveURL(/\/tournaments\/tourney-e2e-ff/);
     await expect(page.getByRole('heading', { name: 'E2E Free Fire MAX Open' })).toBeVisible();
-    await expect(page.getByText(/Rules & Fair Play Guidelines/i)).toBeVisible();
-    await expect(page.getByText(/Prizes & Recognition/i)).toBeVisible();
+    await expect(page.getByText(/Tournament Specifications, Rules & Terms/i)).toBeVisible();
+    await expect(page.getByText(/Prize Pool & Rank Distribution/i)).toBeVisible();
   });
 
   test('registration and login forms display useful validation errors', async ({ page }) => {
@@ -79,7 +79,7 @@ test.describe('A. Guest Browsing, Directory & Authentication', () => {
     await page.getByRole('button', { name: /Complete Registration/i }).click();
 
     await expect(page.getByRole('alert')).toBeVisible();
-    await expect(page.getByText(/Passwords do not match/i)).toBeVisible();
+    await expect(page.getByRole('alert')).toContainText(/Passwords do not match/i);
   });
 
   test('unauthenticated users cannot access protected dashboards', async ({ page }) => {

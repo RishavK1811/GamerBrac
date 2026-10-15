@@ -12,7 +12,6 @@ import {
   AlertCircle,
   AlertTriangle,
   Loader2,
-  FileText,
   CheckCircle2,
   Check,
   LogOut,
@@ -21,10 +20,26 @@ import {
   KeyRound,
   Copy,
   Upload,
-  ShieldAlert,
-  Swords,
   Camera,
+  Coins,
+  Scale,
+  AlertOctagon,
+  Lock,
+  Swords,
+  ShieldAlert,
 } from 'lucide-react';
+import freeFireSvg from '../assets/games/freefire.svg';
+import bgmiSvg from '../assets/games/bgmi.svg';
+import valorantSvg from '../assets/games/valorant.svg';
+import {
+  calculateRankDistribution,
+  calculatePrizePool,
+  getMinParticipationTarget,
+  getTeamSize,
+  calculateTeamEntryFee,
+  getFormatDisplayLabel,
+  getFormatLongLabel,
+} from '../config/tournamentConfig';
 import { tournamentsApi, teamsApi, matchesApi, reportsApi, ApiError } from '../api/client';
 import { useAuth } from '../context';
 import type {
@@ -485,6 +500,29 @@ export const TournamentDetailPage: React.FC = () => {
 
   const isFull = tournament.current_participants >= tournament.max_participants;
   const isSolo = tournament.format.toLowerCase() === 'solo';
+  const isTeamFormat = !isSolo;
+  const teamSize = tournament.team_size ?? getTeamSize(tournament.game_title, tournament.format);
+  const maxPlayerSlots = tournament.max_player_slots ?? (tournament.max_participants * teamSize);
+  const currentPlayerSlots = tournament.current_player_slots ?? (tournament.current_participants * teamSize);
+  const entryFeePerPlayer = tournament.entry_fee_per_player ?? 0;
+  const teamEntryFee = tournament.team_entry_fee ?? calculateTeamEntryFee(entryFeePerPlayer, tournament.game_title, tournament.format);
+  const minParticipation = getMinParticipationTarget(tournament.game_title, tournament.format, tournament.max_participants);
+  const minTeamsTarget = tournament.min_participants_30pct ?? minParticipation.minTeams;
+  const minPlayersTarget = tournament.min_players_30pct ?? minParticipation.minPlayers;
+  const confirmedCount = tournament.confirmed_entries_count ?? tournament.current_participants;
+  const minParticipationMet = tournament.min_participation_met ?? (confirmedCount >= minTeamsTarget);
+  const prizePoolPreview = tournament.prize_pool_preview ?? calculatePrizePool(confirmedCount, entryFeePerPlayer, tournament.game_title, tournament.format).prizePool;
+  const rankDistributions = calculateRankDistribution(prizePoolPreview, isTeamFormat);
+
+  const getArtwork = () => {
+    const t = tournament.game_title.toLowerCase();
+    if (t.includes('free fire')) return freeFireSvg;
+    if (t.includes('bgmi')) return bgmiSvg;
+    if (t.includes('valorant')) return valorantSvg;
+    return null;
+  };
+  const gameArtwork = getArtwork();
+
   const isRegistered = !!myRegistration;
   const isCheckedIn = myRegistration?.participant_status?.toLowerCase() === 'checked_in';
   const canCheckIn =
@@ -511,6 +549,16 @@ export const TournamentDetailPage: React.FC = () => {
 
       {/* Main Tournament Banner Card */}
       <div className="p-8 rounded-3xl card-glass-heavy border border-violet-700/35 shadow-[0_0_40px_rgba(139,92,246,0.18)] space-y-6 relative overflow-hidden">
+        {gameArtwork && (
+          <div className="absolute right-0 top-0 bottom-0 w-1/3 max-w-sm pointer-events-none opacity-20 overflow-hidden hidden sm:block">
+            <img
+              src={gameArtwork}
+              alt=""
+              aria-hidden="true"
+              className="w-full h-full object-cover object-center"
+            />
+          </div>
+        )}
         <div className="absolute top-0 right-0 w-80 h-40 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
         <div className="flex flex-wrap items-center justify-between gap-3 relative z-10">
           <div className="flex items-center space-x-3">
@@ -518,8 +566,17 @@ export const TournamentDetailPage: React.FC = () => {
               {tournament.game_title}
             </span>
             <span className="text-xs font-black px-3 py-1 rounded-xl bg-violet-950/80 border border-violet-700/60 text-violet-300 uppercase">
-              {tournament.format}
+              {getFormatDisplayLabel(tournament.game_title, tournament.format)} {isTeamFormat ? `(${teamSize}P/Team)` : '(Solo)'}
             </span>
+            {tournament.is_free_entry ? (
+              <span className="text-[10px] font-black px-2.5 py-0.5 rounded-lg bg-emerald-950/80 border border-emerald-500/60 text-emerald-300 tracking-wider">
+                FREE ENTRY
+              </span>
+            ) : (
+              <span className="text-[10px] font-black px-2.5 py-0.5 rounded-lg bg-violet-950/80 border border-violet-500/60 text-violet-300 tracking-wider">
+                ENTRY TIER: ₹{entryFeePerPlayer}
+              </span>
+            )}
           </div>
 
           <span className="text-xs font-black px-3 py-1 rounded-xl bg-emerald-950/80 border border-emerald-600/60 text-emerald-300 uppercase shadow-[0_0_12px_rgba(16,185,129,0.25)]">
@@ -565,7 +622,10 @@ export const TournamentDetailPage: React.FC = () => {
               <span>Capacity</span>
             </span>
             <p className="text-sm font-bold text-white">
-              {tournament.current_participants} / {tournament.max_participants} ({fillPercent}%)
+              {tournament.current_participants} / {tournament.max_participants} {isTeamFormat ? 'Teams' : 'Players'}
+            </p>
+            <p className="text-[11px] text-gray-400">
+              {currentPlayerSlots} / {maxPlayerSlots} player slots ({fillPercent}%)
             </p>
           </div>
 
@@ -574,7 +634,20 @@ export const TournamentDetailPage: React.FC = () => {
               <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
               <span>Entry Fee</span>
             </span>
-            <p className="text-sm font-bold text-emerald-400">100% Free Entry</p>
+            {tournament.is_free_entry ? (
+              <p className="text-sm font-bold text-emerald-400">100% Free Entry</p>
+            ) : (
+              <div>
+                <p className="text-sm font-bold text-violet-300">
+                  ₹{entryFeePerPlayer} <span className="text-[11px] text-gray-400">/ player</span>
+                </p>
+                {isTeamFormat && (
+                  <p className="text-[11px] text-cyan-400 font-semibold">
+                    ₹{teamEntryFee} / team
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -602,7 +675,9 @@ export const TournamentDetailPage: React.FC = () => {
               <span>Tournament Participation</span>
             </h2>
             <p className="text-xs text-gray-400 mt-0.5">
-              Zero entry fees. Automatic credential delivery for checked-in participants.
+              {tournament.is_free_entry
+                ? 'Zero entry fees. Automatic credential delivery for checked-in participants.'
+                : `Entry Tier ₹${entryFeePerPlayer}/player. Real-money checkouts disabled in preview mode.`}
             </p>
           </div>
           {isRegistered && (
@@ -617,6 +692,19 @@ export const TournamentDetailPage: React.FC = () => {
             </span>
           )}
         </div>
+
+        {!tournament.is_free_entry && (
+          <div className="p-4 rounded-2xl bg-amber-950/30 border border-amber-600/40 text-amber-200 text-xs space-y-1.5">
+            <div className="flex items-center space-x-2 font-bold text-amber-300">
+              <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+              <span>Preview Only — Real-Money Entry Disabled</span>
+            </div>
+            <p className="text-gray-300 leading-relaxed">
+              Paid tournaments are currently in preview mode pending legal compliance and payment partner integration.
+              Cash checkout, deposits, and real-money registrations are strictly gated.
+            </p>
+          </div>
+        )}
 
         {actionError && (
           <div className="p-3.5 rounded-xl bg-red-950/40 border border-red-800/50 text-red-300 text-xs flex items-center space-x-2">
@@ -750,26 +838,38 @@ export const TournamentDetailPage: React.FC = () => {
                   </p>
                 </div>
 
-                <button
-                  type="button"
-                  disabled={isActionLoading}
-                  onClick={handleRegister}
-                  className="px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 shadow-[0_0_15px_rgba(139,92,246,0.4)] transition-all cursor-pointer self-start sm:self-auto"
-                >
-                  {isActionLoading ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Check className="w-4 h-4" />
-                  )}
-                  <span>Register for Free</span>
-                </button>
+                {!tournament.is_free_entry ? (
+                  <button
+                    type="button"
+                    disabled
+                    className="px-6 py-2.5 rounded-xl bg-gray-800/80 border border-gray-700/60 text-gray-400 font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 cursor-not-allowed self-start sm:self-auto"
+                    title="Real-money entry is currently disabled pending payment partner integration"
+                  >
+                    <Lock className="w-4 h-4" />
+                    <span>Paid Registration Gated (Preview)</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    disabled={isActionLoading}
+                    onClick={handleRegister}
+                    className="px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 shadow-[0_0_15px_rgba(139,92,246,0.4)] transition-all cursor-pointer self-start sm:self-auto"
+                  >
+                    {isActionLoading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Check className="w-4 h-4" />
+                    )}
+                    <span>Register for Free</span>
+                  </button>
+                )}
               </div>
             ) : (
               /* TEAM REGISTRATION (SQUAD / 5V5) */
               <div className="space-y-4">
                 <div>
                   <h3 className="text-sm font-bold text-white">
-                    Team Registration ({tournament.format.toUpperCase()})
+                    Team Registration ({getFormatDisplayLabel(tournament.game_title, tournament.format).toUpperCase()})
                   </h3>
                   <p className="text-xs text-gray-400 mt-0.5">
                     Only the team captain can register a team. Your team must have {tournament.game_title} as its primary game.
@@ -809,19 +909,31 @@ export const TournamentDetailPage: React.FC = () => {
                     </div>
 
                     <div>
-                      <button
-                        type="button"
-                        disabled={isActionLoading || !selectedTeamId}
-                        onClick={handleRegister}
-                        className="w-full px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 shadow-[0_0_15px_rgba(139,92,246,0.4)] transition-all cursor-pointer"
-                      >
-                        {isActionLoading ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Check className="w-4 h-4" />
-                        )}
-                        <span>Register Team</span>
-                      </button>
+                      {!tournament.is_free_entry ? (
+                        <button
+                          type="button"
+                          disabled
+                          className="w-full px-5 py-2.5 rounded-xl bg-gray-800/80 border border-gray-700/60 text-gray-400 font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 cursor-not-allowed"
+                          title="Real-money entry is currently disabled pending payment partner integration"
+                        >
+                          <Lock className="w-4 h-4" />
+                          <span>Paid Registration Gated (Preview)</span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled={isActionLoading || !selectedTeamId}
+                          onClick={handleRegister}
+                          className="w-full px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 shadow-[0_0_15px_rgba(139,92,246,0.4)] transition-all cursor-pointer"
+                        >
+                          {isActionLoading ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Check className="w-4 h-4" />
+                          )}
+                          <span>Register Team</span>
+                        </button>
+                      )}
                     </div>
                   </div>
                 )}
@@ -950,28 +1062,238 @@ export const TournamentDetailPage: React.FC = () => {
         )}
       </div>
 
-      {/* Rules and Prize Information */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="p-6 rounded-2xl bg-[#0e101a] border border-violet-900/30 space-y-3">
-          <div className="flex items-center space-x-2 text-violet-300 font-bold text-sm">
-            <FileText className="w-4 h-4 text-violet-400" />
-            <span>Rules & Fair Play Guidelines</span>
-          </div>
-          <p className="text-xs text-gray-400 leading-relaxed whitespace-pre-line">
-            {tournament.rules ||
-              'Standard publisher fair-play terms apply. All participants must register with verified game UIDs, complete mandatory check-in, and provide screenshot match evidence for score verification.'}
-          </p>
+      {/* =========================================================================
+          TOURNAMENT SPECIFICATIONS, RULES, PRIZE DISTRIBUTION & TERMS
+      ========================================================================= */}
+      <div className="space-y-6">
+        <div className="flex items-center space-x-2 text-white font-bold text-lg">
+          <Scale className="w-5 h-5 text-cyan-400" />
+          <span>Tournament Specifications, Rules & Terms</span>
         </div>
 
-        <div className="p-6 rounded-2xl bg-[#0e101a] border border-violet-900/30 space-y-3">
-          <div className="flex items-center space-x-2 text-cyan-300 font-bold text-sm">
-            <Trophy className="w-4 h-4 text-cyan-400" />
-            <span>Prizes & Recognition</span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Card 1: Tournament Specifications & Capacities */}
+          <div className="p-6 rounded-2xl bg-[#0e101a] border border-violet-900/30 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-violet-900/40">
+              <div className="flex items-center space-x-2 text-violet-300 font-bold text-sm">
+                <Gamepad2 className="w-4 h-4 text-violet-400" />
+                <span>Format & Exact Capacities</span>
+              </div>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-violet-950 border border-violet-800 text-violet-300 uppercase">
+                {tournament.game_title}
+              </span>
+            </div>
+
+            <div className="space-y-2.5 text-xs">
+              <div className="flex justify-between items-center py-1 border-b border-violet-900/20">
+                <span className="text-gray-400">Game & Mode:</span>
+                <span className="text-white font-semibold">{tournament.game_title} &bull; {getFormatLongLabel(tournament.game_title, tournament.format)}</span>
+              </div>
+              <div className="flex justify-between items-center py-1 border-b border-violet-900/20">
+                <span className="text-gray-400">Team Size:</span>
+                <span className="text-cyan-300 font-semibold">{isTeamFormat ? `${teamSize} Players per Team` : '1 Player (Solo)'}</span>
+              </div>
+              <div className="flex justify-between items-center py-1 border-b border-violet-900/20">
+                <span className="text-gray-400">Maximum Capacity:</span>
+                <span className="text-white font-semibold">
+                  {tournament.max_participants} {isTeamFormat ? 'Teams' : 'Players'} ({maxPlayerSlots} total player slots)
+                </span>
+              </div>
+              <div className="flex justify-between items-center py-1 border-b border-violet-900/20">
+                <span className="text-gray-400">Confirmed Participation:</span>
+                <span className="text-emerald-400 font-semibold">
+                  {confirmedCount} / {tournament.max_participants} {isTeamFormat ? 'Teams' : 'Players'} ({currentPlayerSlots} slots)
+                </span>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-xl bg-violet-950/30 border border-violet-900/40 text-[11px] text-gray-400 space-y-1">
+              <span className="font-bold text-violet-300 block">Authoritative Platform Capacities:</span>
+              <p>&bull; Free Fire MAX: Squad (13 teams/52 slots), Duo (25 teams/50 slots), Solo (50 slots)</p>
+              <p>&bull; BGMI: Solo (100 slots), Squad (25 teams/100 slots), Duo (50 teams/100 slots)</p>
+              <p>&bull; VALORANT: 1v1 Solo (50 slots), 2v2 Duo (25 teams/50 slots)</p>
+            </div>
           </div>
-          <p className="text-xs text-gray-400 leading-relaxed">
-            {tournament.prize_pool_description ||
-              'Winner certificate, verified leaderboard placement points, and verified GamerBrac national ranking badge. In compliance with Indian laws, no cash payouts or gambling stakes are permitted.'}
-          </p>
+
+          {/* Card 2: Entry Fees & 30% Minimum Participation Threshold */}
+          <div className="p-6 rounded-2xl bg-[#0e101a] border border-cyan-900/30 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-cyan-900/40">
+              <div className="flex items-center space-x-2 text-cyan-300 font-bold text-sm">
+                <Coins className="w-4 h-4 text-cyan-400" />
+                <span>Entry & 30% Participation Policy</span>
+              </div>
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded border uppercase ${
+                minParticipationMet
+                  ? 'bg-emerald-950/80 border-emerald-800 text-emerald-300'
+                  : 'bg-amber-950/80 border-amber-800 text-amber-300'
+              }`}>
+                {minParticipationMet ? 'Threshold Met' : 'Pending 30%'}
+              </span>
+            </div>
+
+            <div className="space-y-2.5 text-xs">
+              <div className="flex justify-between items-center py-1 border-b border-violet-900/20">
+                <span className="text-gray-400">Entry Tier:</span>
+                <span className="font-bold text-white">
+                  {tournament.is_free_entry ? (
+                    <span className="text-emerald-400">100% Free Entry (₹0)</span>
+                  ) : (
+                    <span className="text-violet-300">₹{entryFeePerPlayer} / player {isTeamFormat ? `(₹${teamEntryFee} / team)` : ''}</span>
+                  )}
+                </span>
+              </div>
+              <div className="flex justify-between items-center py-1 border-b border-violet-900/20">
+                <span className="text-gray-400">30% Minimum Required:</span>
+                <span className="text-cyan-300 font-semibold">
+                  {minTeamsTarget} {isTeamFormat ? 'Teams' : 'Players'} ({minPlayersTarget} player slots)
+                </span>
+              </div>
+              <div className="flex justify-between items-center py-1 border-b border-violet-900/20">
+                <span className="text-gray-400">Current Progress:</span>
+                <span className="font-bold text-white">
+                  {confirmedCount} / {tournament.max_participants} registered ({Math.min(100, Math.round((confirmedCount / tournament.max_participants) * 100))}%)
+                </span>
+              </div>
+            </div>
+
+            {/* Visual 30% Progress Bar */}
+            <div className="space-y-1.5 pt-1">
+              <div className="flex justify-between text-[10px] text-gray-400">
+                <span>Registration Fill</span>
+                <span className="text-cyan-300 font-mono">30% Min Target: {minTeamsTarget}</span>
+              </div>
+              <div className="relative w-full h-2 bg-gray-900 rounded-full overflow-hidden border border-violet-900/30">
+                <div
+                  className="h-full bg-gradient-to-r from-cyan-500 to-emerald-400 rounded-full transition-all duration-500"
+                  style={{ width: `${Math.min(100, (confirmedCount / tournament.max_participants) * 100)}%` }}
+                />
+                <div
+                  className="absolute top-0 bottom-0 w-0.5 bg-amber-400 shadow-[0_0_4px_rgba(251,191,36,0.8)]"
+                  style={{ left: `${Math.min(100, (minTeamsTarget / tournament.max_participants) * 100)}%` }}
+                  title="30% Minimum Participation Threshold"
+                />
+              </div>
+            </div>
+
+            <div className="p-3 rounded-xl bg-amber-950/20 border border-amber-900/40 text-[11px] text-gray-300 space-y-1">
+              <span className="font-bold text-amber-300 flex items-center space-x-1">
+                <AlertOctagon className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span>Automatic Cancellation & 100% Refund:</span>
+              </span>
+              <p className="leading-relaxed">
+                If participation does not reach at least 30% of capacity by registration deadline, the tournament is automatically cancelled. 100% of entry fees are immediately returned to registered players with zero deduction.
+              </p>
+            </div>
+          </div>
+
+          {/* Card 3: Dynamic Prize Pool & Largest-Remainder Rank Distribution */}
+          <div className="p-6 rounded-2xl bg-[#0e101a] border border-violet-900/30 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-violet-900/40">
+              <div className="flex items-center space-x-2 text-cyan-300 font-bold text-sm">
+                <Trophy className="w-4 h-4 text-cyan-400" />
+                <span>Prize Pool & Rank Distribution</span>
+              </div>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-cyan-950 border border-cyan-800 text-cyan-300 uppercase">
+                Floor 65% Pool
+              </span>
+            </div>
+
+            <div className="space-y-2 text-xs">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">Prize Pool Formula:</span>
+                <span className="font-mono text-cyan-300 text-[11px]">floor(65% &times; collected fees)</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">Platform Reserve (35%):</span>
+                <span className="text-gray-300 text-[11px]">Covers hosting, anti-cheat & ops</span>
+              </div>
+              <div className="flex justify-between items-center pt-1 border-t border-violet-900/20 font-bold">
+                <span className="text-white">Active Prize Pool:</span>
+                <span className="text-emerald-400 text-base">₹{prizePoolPreview.toLocaleString()}</span>
+              </div>
+            </div>
+
+            {/* Rank Distribution Table */}
+            <div className="overflow-x-auto pt-1">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-violet-900/40 text-[10px] text-gray-400 uppercase tracking-wider">
+                    <th className="pb-1.5">Rank</th>
+                    <th className="pb-1.5 text-center">Share</th>
+                    <th className="pb-1.5 text-right">Award</th>
+                    <th className="pb-1.5 text-right pr-1">Payout Target</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-violet-900/20">
+                  {rankDistributions.map((alloc) => (
+                    <tr key={alloc.rank} className="hover:bg-violet-950/20">
+                      <td className="py-1.5 font-bold text-white">#{alloc.rank}</td>
+                      <td className="py-1.5 text-center text-cyan-300 font-semibold">{alloc.percentage}%</td>
+                      <td className="py-1.5 text-right font-mono font-bold text-emerald-400">
+                        ₹{alloc.amount.toLocaleString()}
+                      </td>
+                      <td className="py-1.5 text-right pr-1 text-[10px] text-gray-400">
+                        {isTeamFormat ? 'Team Captain' : 'Player'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <p className="text-[10px] text-gray-400 leading-relaxed italic">
+              * Ranks rounded with largest-remainder method (Hare-Niemeyer with higher-rank tie-breaking) ensuring exact whole-rupee allocation with zero rounding discrepancy.
+            </p>
+          </div>
+
+          {/* Card 4: Player Terms, Anti-Cheat & Publisher Compliance */}
+          <div className="p-6 rounded-2xl bg-[#0e101a] border border-violet-900/30 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-violet-900/40">
+              <div className="flex items-center space-x-2 text-violet-300 font-bold text-sm">
+                <ShieldCheck className="w-4 h-4 text-violet-400" />
+                <span>Fair Play, Anti-Cheat & Publisher Notice</span>
+              </div>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-800 text-emerald-400">
+                Verified
+              </span>
+            </div>
+
+            <div className="space-y-2.5 text-xs text-gray-300 leading-relaxed">
+              {tournament.rules && (
+                <div className="p-3 rounded-xl bg-violet-950/40 border border-violet-800/40 mb-3">
+                  <span className="font-bold text-violet-300 block mb-1">Organizer Rules:</span>
+                  <p className="text-gray-300 text-xs whitespace-pre-line leading-relaxed">
+                    {tournament.rules}
+                  </p>
+                </div>
+              )}
+              <div>
+                <span className="font-bold text-white block mb-0.5">&bull; Device & Emulator Restrictions:</span>
+                <p className="text-gray-400 text-[11px]">
+                  Free Fire MAX & BGMI are mobile only (Android/iOS). Emulators (Bluestacks, LDPlayer, GameLoop) and keyboard/mouse adapters are strictly prohibited. VALORANT is PC only with Riot Vanguard active.
+                </p>
+              </div>
+
+              <div>
+                <span className="font-bold text-white block mb-0.5">&bull; Anti-Cheat & Rematch Protocol:</span>
+                <p className="text-gray-400 text-[11px]">
+                  Zero tolerance for cheats, hacks, scripts, or teaming. Permanent platform bans apply. Player disconnections do not warrant a rematch; remakes are only scheduled if custom room servers crash before zone 1.
+                </p>
+              </div>
+
+              <div>
+                <span className="font-bold text-white block mb-0.5">&bull; Screenshot Evidence & Dispute Window:</span>
+                <p className="text-gray-400 text-[11px]">
+                  All captains/players must submit uncropped match summary screenshots within 15 minutes of match conclusion. Disputes must be filed within 15 minutes of match end with screenshot proof.
+                </p>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-gray-950/60 border border-gray-800/60 text-[10px] text-gray-400">
+                <span className="font-bold text-gray-300 block mb-0.5">Publisher Compliance Statement:</span>
+                This competition is an independent community tournament hosted on GamerBrac. GamerBrac is not affiliated with, endorsed by, or sponsored by Garena (Free Fire MAX), KRAFTON (BGMI), or Riot Games (VALORANT).
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

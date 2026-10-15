@@ -5,6 +5,7 @@ import {
   updateTournamentStatus,
   createMatch,
   createValidEvidenceScreenshot,
+  getTestTournamentSchedule,
   API_BASE,
 } from './helpers/api';
 import path from 'path';
@@ -60,11 +61,10 @@ test.describe('D. Organizer Workflow: Verification, Management, Rosters, AES & L
     await page.getByLabel(/Format/i).selectOption('solo');
     await page.getByLabel(/Slot Capacity/i).fill('32');
 
-    const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 16);
-    const dayAfter = new Date(Date.now() + 172800000).toISOString().slice(0, 16);
+    const sched = getTestTournamentSchedule(6);
 
-    await page.getByLabel(/Registration Deadline/i).fill(tomorrow);
-    await page.getByLabel(/Start Datetime/i).fill(dayAfter);
+    await page.getByLabel(/Registration Deadline/i).fill(sched.registration_deadline_local);
+    await page.getByLabel(/Start Datetime/i).fill(sched.start_datetime_local);
 
     await page.getByRole('button', { name: /Create Tournament \(Draft\)/i }).click();
 
@@ -210,5 +210,125 @@ test.describe('D. Organizer Workflow: Verification, Management, Rosters, AES & L
 
     // Verify verified notification
     await expect(page.getByText(/Submission marked as APPROVED and leaderboard updated/i)).toBeVisible();
+  });
+
+  test('enforces weekly free tournament limit (Asia/Kolkata) with 409 Conflict, allows separate weeks, and respects boundaries', async () => {
+    const orgAuth = await loginUser('org@gamerbrac.com', 'OrgPass123!');
+    const token = orgAuth.access_token;
+    const testId = Date.now();
+
+    // 1. Create first free tournament in future Week Offset 12 (Wednesday 14:00 IST)
+    // 2027-04-14 is Wednesday (Asia/Kolkata)
+    const week12Wed = new Date('2027-04-14T14:00:00+05:30');
+    const week12Reg = new Date('2027-04-12T10:00:00+05:30');
+    const tourneyA = await fetch(`${API_BASE}/tournaments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        title: `Weekly Free Cup Alpha ${testId}`,
+        game_title: 'BGMI',
+        format: 'solo',
+        max_participants: 100,
+        registration_deadline: week12Reg.toISOString(),
+        start_datetime: week12Wed.toISOString(),
+        is_free_entry: true,
+      }),
+    });
+    expect(tourneyA.status).toBe(201);
+
+    // 2. Attempt to create a second free tournament in the SAME Asia/Kolkata calendar week (Friday 18:00 IST)
+    const week12Fri = new Date('2027-04-16T18:00:00+05:30');
+    const tourneyB = await fetch(`${API_BASE}/tournaments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        title: `Weekly Free Cup Conflict ${testId}`,
+        game_title: 'BGMI',
+        format: 'solo',
+        max_participants: 100,
+        registration_deadline: week12Reg.toISOString(),
+        start_datetime: week12Fri.toISOString(),
+        is_free_entry: true,
+      }),
+    });
+    expect(tourneyB.status).toBe(409);
+    const conflictBody = await tourneyB.json();
+    expect(conflictBody.detail).toContain('already scheduled');
+    expect(conflictBody.detail).toContain('Asia/Kolkata');
+    expect(conflictBody.detail).toContain(`Weekly Free Cup Alpha ${testId}`);
+
+    // 3. Creating a free tournament in a DIFFERENT calendar week succeeds (Week Offset 13: Wednesday 14:00 IST)
+    const week13Wed = new Date('2027-04-21T14:00:00+05:30');
+    const week13Reg = new Date('2027-04-19T10:00:00+05:30');
+    const tourneyC = await fetch(`${API_BASE}/tournaments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        title: `Weekly Free Cup Beta ${testId}`,
+        game_title: 'BGMI',
+        format: 'solo',
+        max_participants: 100,
+        registration_deadline: week13Reg.toISOString(),
+        start_datetime: week13Wed.toISOString(),
+        is_free_entry: true,
+      }),
+    });
+    expect(tourneyC.status).toBe(201);
+
+    // 4. Asia/Kolkata Boundary Enforcement:
+    // Sunday 2027-05-02 23:59:00+05:30 belongs to Week 14.
+    // Monday 2027-05-03 00:01:00+05:30 belongs to Week 15.
+    // In UTC, they are:
+    // 2027-05-02T18:29:00Z and 2027-05-02T18:31:00Z (only 2 minutes apart on the same UTC day!)
+    const sundayIST = new Date('2027-05-02T23:59:00+05:30');
+    const mondayIST = new Date('2027-05-03T00:01:00+05:30');
+    const boundaryReg = new Date('2027-04-30T10:00:00+05:30');
+
+    // Create tournament on Sunday 23:59 IST (Week 14)
+    const tourneySun = await fetch(`${API_BASE}/tournaments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        title: `Sunday Boundary Cup ${testId}`,
+        game_title: 'VALORANT',
+        format: 'duo',
+        max_participants: 25,
+        registration_deadline: boundaryReg.toISOString(),
+        start_datetime: sundayIST.toISOString(),
+        is_free_entry: true,
+      }),
+    });
+    expect(tourneySun.status).toBe(201);
+
+    // Create tournament on Monday 00:01 IST (Week 15) -> Succeeds despite being 2 minutes apart in UTC!
+    const tourneyMon = await fetch(`${API_BASE}/tournaments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        title: `Monday Boundary Cup ${testId}`,
+        game_title: 'VALORANT',
+        format: 'duo',
+        max_participants: 25,
+        registration_deadline: boundaryReg.toISOString(),
+        start_datetime: mondayIST.toISOString(),
+        is_free_entry: true,
+      }),
+    });
+    expect(tourneyMon.status).toBe(201);
   });
 });

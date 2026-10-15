@@ -16,6 +16,7 @@ import {
   Target,
 } from 'lucide-react';
 import { tournamentsApi } from '../api/client';
+import { getFormatDisplayLabel } from '../config/tournamentConfig';
 import type { ApiTournament, GameTitle } from '../types';
 
 export const TournamentsPage: React.FC = () => {
@@ -63,7 +64,8 @@ export const TournamentsPage: React.FC = () => {
     return (
       t.title.toLowerCase().includes(q) ||
       t.game_title.toLowerCase().includes(q) ||
-      t.format.toLowerCase().includes(q)
+      t.format.toLowerCase().includes(q) ||
+      getFormatDisplayLabel(t.game_title, t.format).toLowerCase().includes(q)
     );
   });
 
@@ -169,7 +171,7 @@ export const TournamentsPage: React.FC = () => {
                   : 'bg-[#111422] text-gray-300 border border-violet-900/40 hover:bg-[#1a1d30] hover:text-white'
               }`}
             >
-              {game === 'all' ? 'All Titles' : game}
+              {game === 'all' ? 'All Games' : game}
             </button>
           ))}
         </div>
@@ -279,7 +281,9 @@ export const TournamentsPage: React.FC = () => {
                   </h3>
 
                   <div className="flex items-center space-x-3 text-xs text-gray-400">
-                    <span className="font-semibold text-gray-300 uppercase">{t.format}</span>
+                    <span className="font-semibold text-gray-300 uppercase">
+                      {getFormatDisplayLabel(t.game_title, t.format)}
+                    </span>
                     <span>•</span>
                     <span className="flex items-center space-x-1.5">
                       <Calendar className="w-3.5 h-3.5 text-violet-400" />

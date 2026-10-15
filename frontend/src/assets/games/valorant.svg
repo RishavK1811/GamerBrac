@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="100%" height="100%">
+  <defs>
+    <linearGradient id="val-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b080f"/>
+      <stop offset="50%" stop-color="#160e1b"/>
+      <stop offset="100%" stop-color="#24101e"/>
+    </linearGradient>
+    <linearGradient id="val-red" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff4655"/>
+      <stop offset="100%" stop-color="#dc2626"/>
+    </linearGradient>
+    <linearGradient id="val-purple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <radialGradient id="val-glow" cx="50%" cy="50%" r="55%">
+      <stop offset="0%" stop-color="#ff4655" stop-opacity="0.32"/>
+      <stop offset="65%" stop-color="#9333ea" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="val-grid" width="45" height="45" patternUnits="userSpaceOnUse">
+      <path d="M 45 0 L 0 0 0 45" fill="none" stroke="#ff4655" stroke-width="0.5" stroke-opacity="0.1"/>
+    </pattern>
+  </defs>
+
+  <!-- Background base -->
+  <rect width="1280" height="720" fill="url(#val-bg)"/>
+  <rect width="1280" height="720" fill="url(#val-grid)"/>
+  <circle cx="640" cy="350" r="500" fill="url(#val-glow)"/>
+
+  <!-- Iconic Valorant sharp diagonal slashes -->
+  <polygon points="500,0 560,0 260,720 200,720" fill="#ff4655" fill-opacity="0.06"/>
+  <polygon points="760,0 820,0 520,720 460,720" fill="#9333ea" fill-opacity="0.05"/>
+  <polygon points="1060,0 1140,0 840,720 760,720" fill="#ff4655" fill-opacity="0.08"/>
+
+  <!-- Valorant Radiant 'V' emblem motif -->
+  <g transform="translate(640, 230)">
+    <!-- Defuse spike ring -->
+    <circle cx="0" cy="0" r="120" fill="#120a16" stroke="url(#val-red)" stroke-width="2.5" stroke-opacity="0.6"/>
+    <circle cx="0" cy="0" r="95" fill="none" stroke="#c084fc" stroke-width="1.5" stroke-dasharray="12 8" stroke-opacity="0.5"/>
+
+    <!-- Iconic split angular V logo -->
+    <!-- Left slash -->
+    <path d="M -55,-65 L -10,-65 L -35,55 L -80,55 Z" fill="url(#val-red)"/>
+    <!-- Right triangle -->
+    <polygon points="40,-65 85,-65 40,55" fill="#ffffff" fill-opacity="0.95"/>
+    <polygon points="15,-20 40,-65 20,20" fill="url(#val-purple)"/>
+
+    <!-- Corner tick marks -->
+    <path d="M -135,-100 L -145,-100 L -145,-80" fill="none" stroke="#ff4655" stroke-width="2"/>
+    <path d="M 135,-100 L 145,-100 L 145,-80" fill="none" stroke="#ff4655" stroke-width="2"/>
+    <path d="M -135,100 L -145,100 L -145,80" fill="none" stroke="#ff4655" stroke-width="2"/>
+    <path d="M 135,100 L 145,100 L 145,80" fill="none" stroke="#ff4655" stroke-width="2"/>
+  </g>
+
+  <!-- Big title -->
+  <text x="640" y="440" font-family="'Inter', system-ui, -apple-system, sans-serif" font-weight="900" font-size="68" fill="#ffffff" text-anchor="middle" letter-spacing="10">
+    VALORANT
+  </text>
+
+  <!-- Subtitle -->
+  <text x="640" y="475" font-family="'Inter', system-ui, -apple-system, sans-serif" font-weight="700" font-size="16" fill="#ff4655" text-anchor="middle" letter-spacing="6">
+    RIOT GAMES TACTICAL FPS
+  </text>
+
+  <!-- Tagline badge -->
+  <rect x="430" y="495" width="420" height="34" rx="17" fill="#ff4655" fill-opacity="0.15" stroke="#ff4655" stroke-width="1.5"/>
+  <text x="640" y="517" font-family="'Inter', system-ui, -apple-system, sans-serif" font-weight="700" font-size="13" fill="#ffe4e6" text-anchor="middle" letter-spacing="3">
+    DEFUSAL PROTOCOL • 5V5 COMPETITIVE
+  </text>
+
+  <!-- Telemetry marks -->
+  <g transform="translate(110, 130)">
+    <rect x="0" y="0" width="16" height="4" fill="#ff4655"/>
+    <text x="0" y="24" font-family="monospace" font-size="11" fill="#ff4655" fill-opacity="0.8">PROTOCOL: ASCENT // B-SITE</text>
+    <text x="0" y="40" font-family="monospace" font-size="10" fill="#ffffff" fill-opacity="0.4">SPIKE CARRIER: ACTIVE</text>
+  </g>
+
+  <g transform="translate(1170, 600)">
+    <text x="0" y="0" font-family="monospace" font-size="11" fill="#c084fc" fill-opacity="0.8" text-anchor="end">FIRST TO 13 ROUNDS</text>
+    <text x="0" y="16" font-family="monospace" font-size="10" fill="#ffffff" fill-opacity="0.4" text-anchor="end">RADIANT OVERTIME ENABLED</text>
+    <rect x="-16" y="24" width="16" height="4" fill="#c084fc"/>
+  </g>
+</svg>

@@ -244,16 +244,12 @@ export const RegisterPage: React.FC = () => {
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#080912]/80 border border-violet-800/40 hover:border-violet-600/60 focus:border-cyan-500 text-white placeholder-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/30 transition-all"
                 />
               </div>
-              {confirmPassword.length > 0 && (
+              {confirmPassword.length > 0 && passwordsMatch && (
                 <div className="flex items-center space-x-1 text-[10px] pt-1">
-                  {passwordsMatch ? (
-                    <span className="text-emerald-400 flex items-center space-x-1">
-                      <CheckCircle2 className="w-3 h-3" />
-                      <span>Passwords match</span>
-                    </span>
-                  ) : (
-                    <span className="text-rose-400">Passwords do not match</span>
-                  )}
+                  <span className="text-emerald-400 flex items-center space-x-1">
+                    <CheckCircle2 className="w-3 h-3" />
+                    <span>Passwords match</span>
+                  </span>
                 </div>
               )}
             </div>

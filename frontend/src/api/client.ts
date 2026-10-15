@@ -19,6 +19,7 @@ import type {
   ParticipantResponse,
   ParticipantStatusUpdateRequest,
   ParticipantSummary,
+  PlatformModesConfigResponse,
   PlayerProfileResponse,
   PlayerProfileUpdate,
   RegisterRequest,
@@ -35,6 +36,7 @@ import type {
   TokenResponse,
   TournamentCreateRequest,
   TournamentDetail,
+  TournamentFinancialPreview,
   TournamentStatus,
   TournamentStatusUpdateRequest,
   TournamentUpdateRequest,
@@ -229,13 +231,16 @@ export const authApi = {
 };
 
 export const tournamentsApi = {
-  async list(params?: { game?: string; status?: string }): Promise<ApiTournament[]> {
+  async list(params?: { game?: string; status?: string; is_free_entry?: boolean }): Promise<ApiTournament[]> {
     const query = new URLSearchParams();
     if (params?.game && params.game !== 'all') {
       query.set('game', params.game);
     }
     if (params?.status && params.status !== 'all') {
       query.set('status', params.status);
+    }
+    if (params?.is_free_entry !== undefined) {
+      query.set('is_free_entry', String(params.is_free_entry));
     }
     const qs = query.toString();
     const endpoint = `/api/v1/tournaments${qs ? `?${qs}` : ''}`;
@@ -277,6 +282,20 @@ export const tournamentsApi = {
 
   async getMyTournaments(): Promise<MyRegistrationItem[]> {
     return request<MyRegistrationItem[]>('/api/v1/tournaments/my', {
+      method: 'GET',
+    });
+  },
+
+  async getModesConfig(): Promise<PlatformModesConfigResponse> {
+    return request<PlatformModesConfigResponse>('/api/v1/tournaments/modes/config', {
+      method: 'GET',
+      skipAuth: true,
+    });
+  },
+
+  async getFinancialPreview(tournamentId: string, expectedCosts?: number): Promise<TournamentFinancialPreview> {
+    const qs = expectedCosts !== undefined ? `?expected_costs=${expectedCosts}` : '';
+    return request<TournamentFinancialPreview>(`/api/v1/tournaments/${tournamentId}/financial-preview${qs}`, {
       method: 'GET',
     });
   },

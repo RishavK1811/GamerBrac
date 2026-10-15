@@ -81,7 +81,12 @@ describe('GamerBrac Frontend with Real API Integration', () => {
     expect(screen.getAllByText(/GAMERBRAC/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Tournaments/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Games/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/API Health/i).length).toBeGreaterThan(0);
+    // API Health must NOT be present in navigation
+    expect(screen.queryByText(/API Health/i)).not.toBeInTheDocument();
+    // Guest navigation buttons
+    expect(screen.getAllByRole('link', { name: /Sign In/i }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole('link', { name: /Register/i }).length).toBeGreaterThan(0);
+    expect(screen.queryByRole('button', { name: /Sign Out/i })).not.toBeInTheDocument();
   });
 
   it('renders hero section with esports call-to-actions', async () => {

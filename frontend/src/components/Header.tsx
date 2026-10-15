@@ -63,8 +63,9 @@ export const Header: React.FC = () => {
   const handleLogout = async () => {
     setNotifications([]);
     setUnreadCount(0);
-    await logout();
     setMobileMenuOpen(false);
+    setShowNotifications(false);
+    await logout();
     navigate('/');
   };
 
@@ -138,19 +139,12 @@ export const Header: React.FC = () => {
               </span>
               <span className={navUnderline} />
             </a>
-            <a
-              href={isHome ? '#status' : '/#status'}
-              className={navLinkBase}
-            >
-              <span>API Health</span>
-              <span className={navUnderline} />
-            </a>
           </nav>
 
           {/* ── Action Row ───────────────────────────────────────────── */}
           <div className="hidden sm:flex items-center space-x-2.5 relative">
 
-            {/* Notification Bell */}
+            {/* Notification Bell (Only when authenticated) */}
             {isAuthenticated && (
               <div className="relative">
                 <button
@@ -223,6 +217,7 @@ export const Header: React.FC = () => {
               </div>
             ) : (
               <div className="flex items-center space-x-2">
+                {/* User menu / dashboard link */}
                 <Link
                   to="/dashboard"
                   className="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-[#111422] hover:bg-[#1a1d32] border border-violet-800/30 hover:border-violet-600/50 text-xs transition-all duration-200"
@@ -261,17 +256,18 @@ export const Header: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="p-2 rounded-xl text-gray-500 hover:text-red-400 hover:bg-red-950/25 border border-transparent hover:border-red-800/40 transition-all duration-200 cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl text-gray-300 hover:text-red-400 bg-[#111422] hover:bg-red-950/25 border border-violet-800/30 hover:border-red-800/40 text-xs font-semibold flex items-center space-x-1.5 transition-all duration-200 cursor-pointer"
                   title="Sign Out"
                 >
-                  <LogOut className="w-4 h-4" />
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Sign Out</span>
                 </button>
               </div>
             )}
 
-            {/* Enter Arena CTA */}
+            {/* Enter Arena CTA: Points to protected dashboard route so it requires login through ProtectedRoute/auth flow */}
             <Link
-              to="/tournaments"
+              to="/dashboard"
               className="hidden lg:flex items-center space-x-1.5 px-4 py-2 text-xs font-bold tracking-wide uppercase rounded-xl btn-neon-shimmer text-white shadow-[0_0_20px_rgba(139,92,246,0.4)] hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-shadow duration-200"
             >
               <span>Enter Arena</span>
@@ -321,15 +317,8 @@ export const Header: React.FC = () => {
             <Users className="w-4 h-4 text-violet-400" />
             <span>Community</span>
           </a>
-          <a
-            href={isHome ? '#status' : '/#status'}
-            onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-200 hover:bg-violet-900/20 hover:text-white transition-all"
-          >
-            <span className="text-cyan-400 font-bold">•</span>
-            <span>API Health</span>
-          </a>
 
+          {/* Mobile Auth actions */}
           <div className="pt-3 border-t border-violet-900/25 space-y-2">
             {!isAuthenticated ? (
               <div className="grid grid-cols-2 gap-2">
@@ -403,7 +392,7 @@ export const Header: React.FC = () => {
             )}
 
             <Link
-              to="/tournaments"
+              to="/dashboard"
               onClick={() => setMobileMenuOpen(false)}
               className="w-full flex items-center justify-center space-x-2 py-3 rounded-xl text-xs font-bold uppercase tracking-wide btn-neon-shimmer text-white"
             >

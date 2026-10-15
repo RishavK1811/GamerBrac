@@ -10,6 +10,7 @@ import {
   createMatch,
   setMatchCredentials,
   createValidEvidenceScreenshot,
+  getTestTournamentSchedule,
   API_BASE,
 } from './helpers/api';
 
@@ -42,14 +43,14 @@ test.describe('C. Match Room Credentials, Private Evidence & Score Submissions',
     playerToken = playerAuth.access_token;
 
     // 3. Create tournament in ongoing state with participant checked-in
-    const now = new Date();
+    const sched = getTestTournamentSchedule(3);
     const tourney = await createTournament(orgToken, {
       title: `E2E Scoring Cup ${timestamp}`,
       game_title: 'BGMI',
       format: 'solo',
       max_participants: 16,
-      registration_deadline: new Date(now.getTime() + 3600000).toISOString(),
-      start_datetime: new Date(now.getTime() + 7200000).toISOString(),
+      registration_deadline: sched.registration_deadline,
+      start_datetime: sched.start_datetime,
     });
     tourneyId = tourney.id;
 
@@ -84,7 +85,7 @@ test.describe('C. Match Room Credentials, Private Evidence & Score Submissions',
       title: 'Grand Finals Round 1',
       match_number: 1,
       round_number: 1,
-      scheduled_start_time: new Date(now.getTime() + 3600000).toISOString(),
+      scheduled_start_time: new Date(Date.now() + 3600000).toISOString(),
     });
     matchId = match.id;
 

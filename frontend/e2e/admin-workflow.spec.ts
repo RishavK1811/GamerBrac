@@ -4,6 +4,7 @@ import {
   loginUser,
   createTournament,
   updateTournamentStatus,
+  getTestTournamentSchedule,
   API_BASE,
 } from './helpers/api';
 
@@ -246,14 +247,14 @@ test.describe('E. Admin Workflow: Approvals, Moderation, Dispute Resolution & Ac
 
     // 2. Register team in an active tournament
     const orgAuth = await loginUser('org@gamerbrac.com', 'OrgPass123!');
-    const now = new Date();
+    const sched = getTestTournamentSchedule(2);
     const tourney = await createTournament(orgAuth.access_token, {
       title: `Team Lock Tournament ${timestamp}`,
       game_title: 'BGMI',
       format: 'squad',
       max_participants: 16,
-      registration_deadline: new Date(now.getTime() + 86400000).toISOString(),
-      start_datetime: new Date(now.getTime() + 172800000).toISOString(),
+      registration_deadline: sched.registration_deadline,
+      start_datetime: sched.start_datetime,
     });
     await updateTournamentStatus(orgAuth.access_token, tourney.id, 'registration_open');
 

@@ -4,6 +4,7 @@ import {
   loginUser,
   createTournament,
   updateTournamentStatus,
+  getTestTournamentSchedule,
   API_BASE,
 } from './helpers/api';
 
@@ -107,15 +108,15 @@ test.describe('B. Player Workflow: Registration, Game Linking, Teams & Tournamen
 
     // Create an isolated solo tournament in check_in state via organizer API
     const orgAuth = await loginUser('org@gamerbrac.com', 'OrgPass123!');
-    const now = new Date();
+    const sched = getTestTournamentSchedule(4);
     const soloTourney = await createTournament(orgAuth.access_token, {
       title: `E2E Solo Sprint ${timestamp}`,
       game_title: 'Free Fire MAX',
       format: 'solo',
       max_participants: 32,
-      registration_deadline: new Date(now.getTime() + 86400000).toISOString(),
-      check_in_deadline: new Date(now.getTime() + 172800000).toISOString(),
-      start_datetime: new Date(now.getTime() + 259200000).toISOString(),
+      registration_deadline: sched.registration_deadline,
+      check_in_deadline: sched.check_in_deadline,
+      start_datetime: sched.start_datetime,
     });
     // Advance to registration_open
     await updateTournamentStatus(orgAuth.access_token, soloTourney.id, 'registration_open');
@@ -153,14 +154,14 @@ test.describe('B. Player Workflow: Registration, Game Linking, Teams & Tournamen
   test('enforces capacity limits and rejects registration when tournament is full', async ({ page }) => {
     const timestamp = Date.now();
     const orgAuth = await loginUser('org@gamerbrac.com', 'OrgPass123!');
-    const now = new Date();
+    const sched = getTestTournamentSchedule(5);
     const fullTourney = await createTournament(orgAuth.access_token, {
       title: `E2E Capacity Test ${timestamp}`,
       game_title: 'Free Fire MAX',
       format: 'solo',
       max_participants: 2, // minimum capacity 2
-      registration_deadline: new Date(now.getTime() + 86400000).toISOString(),
-      start_datetime: new Date(now.getTime() + 259200000).toISOString(),
+      registration_deadline: sched.registration_deadline,
+      start_datetime: sched.start_datetime,
     });
     await updateTournamentStatus(orgAuth.access_token, fullTourney.id, 'registration_open');
 

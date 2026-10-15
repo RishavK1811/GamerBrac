@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { formatApiError, tokenStorage, getApiUrl } from './api/client';
@@ -470,9 +470,9 @@ describe('Tier 2A: Authentication, Routing & Role Security', () => {
                 id: 't-123',
                 title: 'VALORANT Spike Series India',
                 game_title: 'VALORANT',
-                format: '5v5',
+                format: 'duo',
                 status: 'registration_open',
-                max_participants: 16,
+                max_participants: 25,
                 current_participants: 8,
                 registration_deadline: new Date(Date.now() + 86400000).toISOString(),
                 start_datetime: new Date(Date.now() + 172800000).toISOString(),
@@ -503,9 +503,10 @@ describe('Tier 2A: Authentication, Routing & Role Security', () => {
       // Open standings modal
       fireEvent.click(screen.getByRole('button', { name: /View Standings & Leaderboard/i }));
 
-      expect(await screen.findByRole('dialog')).toBeInTheDocument();
-      expect(await screen.findByText(/Vortex Legends/i)).toBeInTheDocument();
-      expect(screen.getByText(/58/i)).toBeInTheDocument();
+      const dialog = await screen.findByRole('dialog');
+      expect(dialog).toBeInTheDocument();
+      expect(within(dialog).getByText(/Vortex Legends/i)).toBeInTheDocument();
+      expect(within(dialog).getByText('58')).toBeInTheDocument();
     });
   });
 

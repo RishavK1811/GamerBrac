@@ -63,6 +63,28 @@ export async function loginUser(
   return res.json();
 }
 
+/**
+ * Computes deterministic future tournament dates separated into distinct Asia/Kolkata calendar weeks.
+ * Ensures registration_deadline < check_in_deadline < start_datetime.
+ * weekOffset specifies which future week (e.g. 2 for 2 weeks out, 3 for 3 weeks out).
+ */
+export function getTestTournamentSchedule(weekOffset: number = 2) {
+  const now = new Date();
+  const baseTime = now.getTime() + weekOffset * 7 * 24 * 60 * 60 * 1000;
+  const regDate = new Date(baseTime + 1 * 24 * 60 * 60 * 1000);
+  const checkInDate = new Date(baseTime + 2 * 24 * 60 * 60 * 1000);
+  const startDate = new Date(baseTime + 3 * 24 * 60 * 60 * 1000);
+
+  return {
+    registration_deadline: regDate.toISOString(),
+    check_in_deadline: checkInDate.toISOString(),
+    start_datetime: startDate.toISOString(),
+    registration_deadline_local: regDate.toISOString().slice(0, 16),
+    check_in_deadline_local: checkInDate.toISOString().slice(0, 16),
+    start_datetime_local: startDate.toISOString().slice(0, 16),
+  };
+}
+
 export async function createTournament(
   token: string,
   payload: {
@@ -75,6 +97,8 @@ export async function createTournament(
     check_in_deadline?: string;
     rules?: string;
     prize_pool_description?: string;
+    is_free_entry?: boolean;
+    entry_fee_per_player?: number;
   }
 ) {
   const res = await fetch(`${API_BASE}/tournaments`, {

@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="100%" height="100%">
+  <defs>
+    <linearGradient id="ff-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0503"/>
+      <stop offset="50%" stop-color="#190d07"/>
+      <stop offset="100%" stop-color="#2d1205"/>
+    </linearGradient>
+    <linearGradient id="ff-flame" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff3b00"/>
+      <stop offset="50%" stop-color="#ff8c00"/>
+      <stop offset="100%" stop-color="#ffd000"/>
+    </linearGradient>
+    <linearGradient id="ff-accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff4500" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#ffa500" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="ff-glow" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#ff5500" stop-opacity="0.35"/>
+      <stop offset="70%" stop-color="#ff2200" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="ff-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ff4500" stroke-width="0.5" stroke-opacity="0.12"/>
+    </pattern>
+  </defs>
+
+  <!-- Background base -->
+  <rect width="1280" height="720" fill="url(#ff-bg)"/>
+  <rect width="1280" height="720" fill="url(#ff-grid)"/>
+  <circle cx="640" cy="360" r="480" fill="url(#ff-glow)"/>
+
+  <!-- Tactical geometric angled shapes -->
+  <path d="M-100 720 L380 0 L520 0 L40 720 Z" fill="#ff3b00" fill-opacity="0.06"/>
+  <path d="M800 720 L1200 0 L1350 0 L950 720 Z" fill="#ffa500" fill-opacity="0.05"/>
+  <polygon points="1120,80 1220,180 1200,240 1080,120" fill="#ff5500" fill-opacity="0.15"/>
+  <polygon points="80,520 200,640 160,680 40,560" fill="#ff3b00" fill-opacity="0.12"/>
+
+  <!-- Hexagonal emblem / badge motif -->
+  <g transform="translate(640, 240)">
+    <!-- Outer hexagon -->
+    <polygon points="0,-110 95,-55 95,55 0,110 -95,55 -95,-55" fill="#180b06" stroke="url(#ff-flame)" stroke-width="3"/>
+    <!-- Inner glowing hexagon -->
+    <polygon points="0,-90 78,-45 78,45 0,90 -78,45 -78,-45" fill="none" stroke="#ff8c00" stroke-width="1.5" stroke-opacity="0.6" stroke-dasharray="8 6"/>
+    <!-- Center flame / skull phoenix wings motif -->
+    <path d="M 0,-65 C 20,-30 45,-15 55,20 C 35,15 25,35 0,65 C -25,35 -35,15 -55,20 C -45,-15 -20,-30 0,-65 Z" fill="url(#ff-flame)"/>
+    <circle cx="0" cy="5" r="10" fill="#fff" fill-opacity="0.9"/>
+  </g>
+
+  <!-- Game title typography -->
+  <text x="640" y="440" font-family="'Inter', system-ui, -apple-system, sans-serif" font-weight="900" font-size="64" fill="#ffffff" text-anchor="middle" letter-spacing="8">
+    FREE FIRE MAX
+  </text>
+
+  <!-- Tagline badge -->
+  <rect x="420" y="480" width="440" height="34" rx="17" fill="#ff3b00" fill-opacity="0.18" stroke="#ff5500" stroke-width="1.5"/>
+  <text x="640" y="502" font-family="'Inter', system-ui, -apple-system, sans-serif" font-weight="700" font-size="13" fill="#ffaa44" text-anchor="middle" letter-spacing="4">
+    SURVIVAL BATTLE ROYALE • SQUAD ARENA
+  </text>
+
+  <!-- Crosshair and telemetry marks -->
+  <circle cx="160" cy="140" r="30" fill="none" stroke="#ff8c00" stroke-width="1.5" stroke-opacity="0.4"/>
+  <line x1="160" y1="100" x2="160" y2="180" stroke="#ff8c00" stroke-width="1" stroke-opacity="0.4"/>
+  <line x1="120" y1="140" x2="200" y2="140" stroke="#ff8c00" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="160" y="195" font-family="monospace" font-size="10" fill="#ff8c00" fill-opacity="0.6" text-anchor="middle">BERMUDA // 50P</text>
+
+  <circle cx="1120" cy="580" r="30" fill="none" stroke="#ff8c00" stroke-width="1.5" stroke-opacity="0.4"/>
+  <line x1="1120" y1="540" x2="1120" y2="620" stroke="#ff8c00" stroke-width="1" stroke-opacity="0.4"/>
+  <line x1="1080" y1="580" x2="1160" y2="580" stroke="#ff8c00" stroke-width="1" stroke-opacity="0.4"/>
+  <text x="1120" y="635" font-family="monospace" font-size="10" fill="#ff8c00" fill-opacity="0.6" text-anchor="middle">PURGATORY // CLASH</text>
+
+  <!-- Bottom gradient overlay for contrast -->
+  <rect y="600" width="1280" height="120" fill="url(#ff-accent)" opacity="0.3"/>
+</svg>

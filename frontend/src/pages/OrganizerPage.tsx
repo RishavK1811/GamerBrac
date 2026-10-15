@@ -24,6 +24,11 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context';
 import { organizerApi, tournamentsApi, ApiError, getApiUrl } from '../api/client';
+import {
+  getModeConfig,
+  getFormatDisplayLabel,
+  getFormatLongLabel,
+} from '../config/tournamentConfig';
 import type {
   ApiTournament,
   TournamentDetail,
@@ -285,8 +290,10 @@ export const OrganizerPage: React.FC = () => {
       const created = await organizerApi.createTournament(payload);
       setActionSuccess(`Tournament "${created.title}" successfully created in Draft.`);
       setShowCreateModal(false);
-      await fetchTournaments();
+      setTournaments((prev) => [created, ...prev.filter((t) => t.id !== created.id)]);
       setSelectedTournamentId(created.id);
+      await fetchTournaments();
+      await fetchTournamentDetail(created.id);
     } catch (err) {
       if (err instanceof ApiError) {
         setActionError(err.message);
@@ -666,7 +673,7 @@ export const OrganizerPage: React.FC = () => {
                       </div>
                       <h4 className="text-sm font-bold text-white truncate">{t.title}</h4>
                       <div className="flex items-center justify-between text-[11px] text-gray-400 mt-2">
-                        <span>Format: {t.format}</span>
+                        <span>Format: {getFormatDisplayLabel(t.game_title, t.format)}</span>
                         <span>
                           {t.current_participants} / {t.max_participants} Slots
                         </span>
@@ -694,7 +701,7 @@ export const OrganizerPage: React.FC = () => {
                           </span>
                         </div>
                         <p className="text-xs text-gray-400 mt-1">
-                          {selectedTournamentDetail.game_title} • {selectedTournamentDetail.format.toUpperCase()} • Max {selectedTournamentDetail.max_participants} Participants
+                          {selectedTournamentDetail.game_title} • {getFormatLongLabel(selectedTournamentDetail.game_title, selectedTournamentDetail.format)} • Max {selectedTournamentDetail.max_participants} Participants
                         </p>
                       </div>
 
@@ -1111,7 +1118,26 @@ export const OrganizerPage: React.FC = () => {
                   <select
                     id="create_tournament_game"
                     value={createForm.game_title}
-                    onChange={(e) => setCreateForm({ ...createForm, game_title: e.target.value as GameTitle })}
+                    onChange={(e) => {
+                      const g = e.target.value as GameTitle;
+                      let fmt = createForm.format;
+                      if (g === 'VALORANT') {
+                        if (fmt !== 'solo' && fmt !== 'duo') {
+                          fmt = 'solo';
+                        }
+                      } else {
+                        if (fmt === '5v5') {
+                          fmt = 'squad';
+                        }
+                      }
+                      const cfg = getModeConfig(g, fmt);
+                      setCreateForm({
+                        ...createForm,
+                        game_title: g,
+                        format: fmt,
+                        max_participants: cfg?.maxTeams ?? createForm.max_participants,
+                      });
+                    }}
                     className="w-full px-3 py-2 rounded-xl bg-[#141624] border border-violet-900/40 text-white"
                   >
                     <option value="BGMI">BGMI</option>
@@ -1127,13 +1153,29 @@ export const OrganizerPage: React.FC = () => {
                   <select
                     id="create_tournament_format"
                     value={createForm.format}
-                    onChange={(e) => setCreateForm({ ...createForm, format: e.target.value as TournamentFormat })}
+                    onChange={(e) => {
+                      const fmt = e.target.value as TournamentFormat;
+                      const cfg = getModeConfig(createForm.game_title, fmt);
+                      setCreateForm({
+                        ...createForm,
+                        format: fmt,
+                        max_participants: cfg?.maxTeams ?? createForm.max_participants,
+                      });
+                    }}
                     className="w-full px-3 py-2 rounded-xl bg-[#141624] border border-violet-900/40 text-white"
                   >
-                    <option value="solo">Solo</option>
-                    <option value="duo">Duo</option>
-                    <option value="squad">Squad</option>
-                    <option value="5v5">5v5</option>
+                    {createForm.game_title === 'VALORANT' ? (
+                      <>
+                        <option value="solo">1v1 (Solo)</option>
+                        <option value="duo">2v2 (Duo)</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="solo">Solo</option>
+                        <option value="duo">Duo</option>
+                        <option value="squad">Squad</option>
+                      </>
+                    )}
                   </select>
                 </div>
               </div>

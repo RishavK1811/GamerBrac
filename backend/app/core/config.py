@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24
     ROOM_ENCRYPTION_KEY: str = "gamerbrac-room-encryption-key-must-be-secret-2026"
 
+    # Feature Gates
+    PAID_TOURNAMENTS_ENABLED: bool = False
+
     # Rate Limiting & Proxies
     RATE_LIMIT_ENABLED: bool = True
     TRUSTED_PROXIES: List[str] = ["127.0.0.1", "::1", "localhost", "testclient"]
