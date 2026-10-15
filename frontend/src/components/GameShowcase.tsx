@@ -307,7 +307,7 @@ export const GameShowcase: React.FC = () => {
                 key={filter}
                 type="button"
                 onClick={() => setSelectedGame(filter)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer ${
+                className={`min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-200 cursor-pointer flex items-center justify-center ${
                   selectedGame === filter
                     ? 'bg-violet-600 text-white shadow-[0_0_16px_rgba(139,92,246,0.45)] border border-violet-500'
                     : 'bg-[#0e1020] text-gray-300 border border-violet-900/40 hover:bg-[#161930] hover:border-violet-600/50'
@@ -387,7 +387,7 @@ export const GameShowcase: React.FC = () => {
               <div className="h-4 w-1/2 rounded skeleton-shimmer" />
             </div>
           ) : weeklyFreeTournament ? (
-            <div className="relative p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-[#12132b]/95 via-[#0e1020]/90 to-[#0a0d18]/95 border-2 border-emerald-500/40 shadow-[0_0_40px_rgba(16,185,129,0.15)] backdrop-blur-md overflow-hidden">
+            <div className="relative p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#12132b]/95 via-[#0e1020]/90 to-[#0a0d18]/95 border-2 border-emerald-500/40 shadow-[0_0_40px_rgba(16,185,129,0.15)] backdrop-blur-md overflow-hidden">
               <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
               <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
@@ -727,7 +727,7 @@ export const GameShowcase: React.FC = () => {
           aria-labelledby="leaderboard-modal-title"
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4"
         >
-          <div className="card-glass-heavy rounded-2xl max-w-3xl w-full p-6 shadow-[0_0_50px_rgba(139,92,246,0.35)] animate-entrance">
+          <div className="card-glass-heavy rounded-2xl max-w-3xl w-full p-4 sm:p-6 shadow-[0_0_50px_rgba(139,92,246,0.35)] animate-entrance max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-4 border-b border-violet-900/35 mb-5">
               <div className="flex items-center space-x-2.5">
                 <div className="p-2 rounded-xl bg-violet-950/80 border border-violet-700/40">
@@ -740,7 +740,7 @@ export const GameShowcase: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setActiveLeaderboardId(null)}
-                className="text-gray-500 hover:text-white p-1.5 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-violet-500 transition-colors cursor-pointer"
+                className="text-gray-400 hover:text-white p-2 rounded-xl hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-violet-500 transition-colors cursor-pointer min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label="Close leaderboard modal"
               >
                 <X className="w-5 h-5" />
@@ -823,12 +823,12 @@ export const GameShowcase: React.FC = () => {
               </div>
             )}
 
-            <div className="mt-5 pt-4 border-t border-violet-900/25 flex items-center justify-between text-[10px] text-gray-500">
+            <div className="mt-5 pt-4 border-t border-violet-900/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-[10px] text-gray-500">
               <span>Points: 1st=10pts · 2nd=6pts · 3rd=5pts · +1pt per Kill</span>
               <button
                 type="button"
                 onClick={() => setActiveLeaderboardId(null)}
-                className="px-4 py-2 rounded-lg bg-[#111422] hover:bg-[#1a1e35] border border-gray-700/50 text-gray-300 hover:text-white transition-colors cursor-pointer text-xs font-semibold"
+                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#111422] hover:bg-[#1a1e35] border border-gray-700/50 text-gray-300 hover:text-white transition-colors cursor-pointer text-xs font-semibold min-h-[44px] flex items-center justify-center"
               >
                 Close
               </button>

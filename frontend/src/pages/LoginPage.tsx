@@ -38,7 +38,7 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-16 relative">
+    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-8 sm:py-16 relative">
       {/* Ambient glows */}
       <div className="absolute top-1/4 left-1/4 w-80 h-80 rounded-full pointer-events-none"
         style={{ background: 'radial-gradient(circle, rgba(109,40,217,0.15) 0%, transparent 70%)' }} />
@@ -47,7 +47,7 @@ export const LoginPage: React.FC = () => {
 
       <div className="w-full max-w-md relative z-10 animate-entrance">
         {/* Card */}
-        <div className="rounded-2xl border border-violet-700/30 shadow-[0_0_50px_rgba(139,92,246,0.18)] overflow-hidden card-glass-heavy p-8 space-y-7">
+        <div className="rounded-2xl border border-violet-700/30 shadow-[0_0_50px_rgba(139,92,246,0.18)] overflow-hidden card-glass-heavy p-5 sm:p-8 space-y-6 sm:space-y-7">
 
           {/* Header */}
           <div className="text-center space-y-3">
@@ -57,7 +57,7 @@ export const LoginPage: React.FC = () => {
               </div>
             </div>
             <div>
-              <h1 className="text-2xl font-black tracking-tight text-white">Sign In to GamerBrac</h1>
+              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">Sign In to GamerBrac</h1>
               <p className="text-xs text-gray-400 mt-1">Enter your credentials to access your player hub.</p>
             </div>
           </div>
@@ -91,7 +91,7 @@ export const LoginPage: React.FC = () => {
                   value={usernameOrEmail}
                   onChange={(e) => setUsernameOrEmail(e.target.value)}
                   placeholder="player_one or player@gamerbrac.com"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#080912]/80 border border-violet-800/40 hover:border-violet-600/60 focus:border-cyan-500 text-white placeholder-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/30 transition-all"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#080912]/80 border border-violet-800/40 hover:border-violet-600/60 focus:border-cyan-500 text-white placeholder-gray-600 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/30 transition-all"
                 />
               </div>
             </div>
@@ -112,7 +112,7 @@ export const LoginPage: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#080912]/80 border border-violet-800/40 hover:border-violet-600/60 focus:border-cyan-500 text-white placeholder-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/30 transition-all"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#080912]/80 border border-violet-800/40 hover:border-violet-600/60 focus:border-cyan-500 text-white placeholder-gray-600 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/30 transition-all"
                 />
               </div>
             </div>
@@ -120,7 +120,7 @@ export const LoginPage: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-3.5 rounded-xl btn-neon-shimmer disabled:opacity-50 disabled:cursor-not-allowed disabled:animate-none text-white font-bold text-sm uppercase tracking-wider shadow-[0_0_24px_rgba(139,92,246,0.40)] hover:shadow-[0_0_35px_rgba(139,92,246,0.60)] transition-shadow flex items-center justify-center space-x-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
+              className="w-full min-h-[44px] py-3.5 rounded-xl btn-neon-shimmer disabled:opacity-50 disabled:cursor-not-allowed disabled:animate-none text-white font-bold text-sm uppercase tracking-wider shadow-[0_0_24px_rgba(139,92,246,0.40)] hover:shadow-[0_0_35px_rgba(139,92,246,0.60)] transition-shadow flex items-center justify-center space-x-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
             >
               {isSubmitting ? (
                 <>

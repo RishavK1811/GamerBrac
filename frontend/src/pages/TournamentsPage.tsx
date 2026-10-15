@@ -136,7 +136,7 @@ export const TournamentsPage: React.FC = () => {
             <Trophy className="w-4 h-4 text-cyan-400" />
             <span>National Esports Circuit</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white uppercase">
+          <h1 className="text-2xl xs:text-3xl sm:text-4xl font-black tracking-tight text-white uppercase">
             Tournament Directory
           </h1>
           <p className="text-xs sm:text-sm text-gray-400 mt-1 max-w-xl">
@@ -153,7 +153,7 @@ export const TournamentsPage: React.FC = () => {
       </div>
 
       {/* ── Filter and Search Bar ─────────────────────────────────── */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 card-glass-heavy p-4 rounded-2xl border border-violet-800/40 shadow-lg">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 card-glass-heavy p-3.5 sm:p-4 rounded-2xl border border-violet-800/40 shadow-lg">
         {/* Game Filter Pills */}
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs text-gray-400 flex items-center space-x-1 mr-2">
@@ -165,7 +165,7 @@ export const TournamentsPage: React.FC = () => {
               key={game}
               type="button"
               onClick={() => setSelectedGame(game)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer ${
+              className={`min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer flex items-center justify-center ${
                 selectedGame === game
                   ? 'bg-violet-600 text-white shadow-[0_0_15px_rgba(139,92,246,0.5)] border border-violet-400/50'
                   : 'bg-[#111422] text-gray-300 border border-violet-900/40 hover:bg-[#1a1d30] hover:text-white'
@@ -186,7 +186,7 @@ export const TournamentsPage: React.FC = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search tournament title or format..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#080912]/80 border border-violet-800/40 hover:border-violet-600/60 focus:border-cyan-500 text-white placeholder-gray-500 text-xs focus:outline-none focus:ring-2 focus:ring-cyan-500/30 transition-all"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#080912]/80 border border-violet-800/40 hover:border-violet-600/60 focus:border-cyan-500 text-white placeholder-gray-500 text-base sm:text-xs focus:outline-none focus:ring-2 focus:ring-cyan-500/30 transition-all"
           />
         </div>
       </div>
@@ -263,7 +263,7 @@ export const TournamentsPage: React.FC = () => {
             return (
               <div
                 key={t.id}
-                className="group p-6 rounded-2xl bg-[#0e1020]/90 border border-violet-900/40 hover:border-cyan-500/50 hover:shadow-[0_0_30px_rgba(6,182,212,0.18)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between space-y-5 backdrop-blur-sm"
+                className="group p-4 sm:p-6 rounded-2xl bg-[#0e1020]/90 border border-violet-900/40 hover:border-cyan-500/50 hover:shadow-[0_0_30px_rgba(6,182,212,0.18)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between space-y-4 sm:space-y-5 backdrop-blur-sm"
               >
                 <div className="space-y-3.5">
                   <div className="flex items-center justify-between gap-2">
@@ -276,7 +276,7 @@ export const TournamentsPage: React.FC = () => {
                     {getStatusBadge(t.status)}
                   </div>
 
-                  <h3 className="text-lg font-bold text-white group-hover:text-cyan-300 transition-colors line-clamp-1">
+                  <h3 className="text-base sm:text-lg font-bold text-white group-hover:text-cyan-300 transition-colors line-clamp-1">
                     {t.title}
                   </h3>
 
@@ -311,16 +311,22 @@ export const TournamentsPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-violet-900/30 flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider flex items-center space-x-1">
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                    <span>Free Entry</span>
-                  </span>
+                <div className="pt-4 border-t border-violet-900/30 flex flex-wrap items-center justify-between gap-2">
+                  {t.is_free_entry ? (
+                    <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider flex items-center space-x-1">
+                      <ShieldCheck className="w-3.5 h-3.5" />
+                      <span>Free Entry</span>
+                    </span>
+                  ) : (
+                    <span className="text-[11px] font-bold text-violet-300 uppercase tracking-wider flex items-center space-x-1">
+                      <span>Entry: ₹{t.entry_fee_per_player}/player</span>
+                    </span>
+                  )}
                   <Link
                     to={`/tournaments/${t.id}`}
-                    className="px-4 py-2 rounded-xl bg-violet-900/30 hover:bg-cyan-950/70 border border-violet-700/50 hover:border-cyan-500/60 text-white hover:text-cyan-300 text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-sm"
+                    className="min-h-[44px] px-4 py-2 rounded-xl bg-violet-900/30 hover:bg-cyan-950/70 border border-violet-700/50 hover:border-cyan-500/60 text-white hover:text-cyan-300 text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-sm"
                   >
-                    <span>View Bracket</span>
+                    <span>Join / View Bracket</span>
                     <ChevronRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>

@@ -606,3 +606,333 @@ def test_financial_preview_endpoint(
     data_costs = resp_costs.json()
     assert data_costs["is_projection_complete"] is True
     assert "Deficit risk of ₹200" in data_costs["cost_safety_warning"]
+
+
+# ---------------------------------------------------------------------------
+# 8. Complete Tournament Joining & Participant Management Flow
+# ---------------------------------------------------------------------------
+
+def test_free_solo_registration_persistence_and_detail(
+    client: TestClient,
+    db_session: Session,
+    create_user: Callable,
+    auth_headers: Callable,
+):
+    """Verify free solo registration, DB persistence, participants list, and duplicate rejection."""
+    org = _create_org(create_user, "org_reg_1")
+    player = create_user("player_solo_1", "player_solo_1@gamerbrac.com", role=UserRole.PLAYER)
+    now = datetime.now(timezone.utc)
+
+    # 1. Create a free solo tournament in registration_open state
+    t = Tournament(
+        title="Free Solo Championship",
+        game_title="Free Fire MAX",
+        format=TournamentFormat.SOLO,
+        status=TournamentStatus.REGISTRATION_OPEN,
+        max_participants=50,
+        current_participants=0,
+        registration_deadline=now + timedelta(days=2),
+        start_datetime=now + timedelta(days=5),
+        organizer_id=org.id,
+        is_free_entry=True,
+        entry_fee_per_player=0,
+    )
+    db_session.add(t)
+    db_session.commit()
+
+    # 2. Unauthenticated registration must return 401 Unauthorized
+    unauth_resp = client.post(
+        f"/api/v1/tournaments/{t.id}/register",
+        json={},
+    )
+    assert unauth_resp.status_code == 401
+
+    # 3. Authenticated registration succeeds
+    reg_resp = client.post(
+        f"/api/v1/tournaments/{t.id}/register",
+        json={},
+        headers=auth_headers(player),
+    )
+    assert reg_resp.status_code == 201
+    reg_data = reg_resp.json()
+    assert reg_data["user_id"] == player.id
+    assert reg_data["team_id"] is None
+    assert reg_data["status"] == "registered"
+
+    # 4. Verify DB persistence and tournament counter increment
+    db_session.expire_all()
+    part = (
+        db_session.query(TournamentParticipant)
+        .filter(
+            TournamentParticipant.tournament_id == t.id,
+            TournamentParticipant.user_id == player.id,
+        )
+        .first()
+    )
+    assert part is not None
+    assert part.status == ParticipantStatus.REGISTERED
+    assert part.team_id is None
+
+    t_db = db_session.query(Tournament).filter(Tournament.id == t.id).first()
+    assert t_db.current_participants == 1
+
+    # 5. Public GET /{id} includes participant in participants list
+    detail_resp = client.get(f"/api/v1/tournaments/{t.id}")
+    assert detail_resp.status_code == 200
+    detail_data = detail_resp.json()
+    assert detail_data["current_participants"] == 1
+    assert len(detail_data["participants"]) == 1
+    p_summary = detail_data["participants"][0]
+    assert p_summary["user_id"] == player.id
+    assert p_summary["username"] == player.username
+    assert p_summary["status"] == "registered"
+
+    # 6. Player GET /my returns their active registration
+    my_resp = client.get("/api/v1/tournaments/my", headers=auth_headers(player))
+    assert my_resp.status_code == 200
+    my_data = my_resp.json()
+    assert len(my_data) >= 1
+    my_entry = next((item for item in my_data if item["tournament_id"] == t.id), None)
+    assert my_entry is not None
+    assert my_entry["participant_status"] == "registered"
+
+    # 7. Duplicate registration rejected with 400
+    dup_resp = client.post(
+        f"/api/v1/tournaments/{t.id}/register",
+        json={},
+        headers=auth_headers(player),
+    )
+    assert dup_resp.status_code == 400
+    assert "already registered" in dup_resp.json()["detail"].lower()
+
+
+def test_registration_capacity_boundary_and_full_rejection(
+    client: TestClient,
+    db_session: Session,
+    create_user: Callable,
+    auth_headers: Callable,
+):
+    """Enforce capacity limits and reject registration when tournament slots are full."""
+    org = _create_org(create_user, "org_cap_lim")
+    p1 = create_user("cap_p1", "cap_p1@gamerbrac.com", role=UserRole.PLAYER)
+    p2 = create_user("cap_p2", "cap_p2@gamerbrac.com", role=UserRole.PLAYER)
+    now = datetime.now(timezone.utc)
+
+    # Tournament with max_participants = 1
+    t = Tournament(
+        title="Highlander Solo 1 Slot",
+        game_title="BGMI",
+        format=TournamentFormat.SOLO,
+        status=TournamentStatus.REGISTRATION_OPEN,
+        max_participants=1,
+        current_participants=0,
+        registration_deadline=now + timedelta(days=2),
+        start_datetime=now + timedelta(days=5),
+        organizer_id=org.id,
+        is_free_entry=True,
+    )
+    db_session.add(t)
+    db_session.commit()
+
+    # P1 fills slot 1
+    resp1 = client.post(
+        f"/api/v1/tournaments/{t.id}/register",
+        json={},
+        headers=auth_headers(p1),
+    )
+    assert resp1.status_code == 201
+
+    # P2 registration rejected because tournament is full
+    resp2 = client.post(
+        f"/api/v1/tournaments/{t.id}/register",
+        json={},
+        headers=auth_headers(p2),
+    )
+    assert resp2.status_code == 400
+    assert "full" in resp2.json()["detail"].lower()
+
+    # Counter remains 1
+    db_session.expire_all()
+    t_db = db_session.query(Tournament).filter(Tournament.id == t.id).first()
+    assert t_db.current_participants == 1
+
+
+def test_valorant_solo_and_duo_registration_rules(
+    client: TestClient,
+    db_session: Session,
+    create_user: Callable,
+    auth_headers: Callable,
+):
+    """Validate VALORANT 1v1 (solo) and 2v2 (duo) registration requirements."""
+    org = _create_org(create_user, "org_val_reg")
+    player_solo = create_user("val_solo_p", "val_solo_p@gamerbrac.com", role=UserRole.PLAYER)
+    captain_val = create_user("val_cap", "val_cap@gamerbrac.com", role=UserRole.PLAYER)
+    now = datetime.now(timezone.utc)
+
+    # 1. VALORANT 1v1 (Solo) tournament
+    val_solo_t = Tournament(
+        title="VALORANT 1v1 Invitational",
+        game_title="VALORANT",
+        format=TournamentFormat.SOLO,
+        status=TournamentStatus.REGISTRATION_OPEN,
+        max_participants=50,
+        current_participants=0,
+        registration_deadline=now + timedelta(days=2),
+        start_datetime=now + timedelta(days=5),
+        organizer_id=org.id,
+        is_free_entry=True,
+    )
+    db_session.add(val_solo_t)
+    db_session.commit()
+
+    # Solo tournament rejects payload with team_id
+    resp_invalid_solo = client.post(
+        f"/api/v1/tournaments/{val_solo_t.id}/register",
+        json={"team_id": "dummy-team-id"},
+        headers=auth_headers(player_solo),
+    )
+    assert resp_invalid_solo.status_code == 422
+
+    # Solo tournament accepts solo registration
+    resp_valid_solo = client.post(
+        f"/api/v1/tournaments/{val_solo_t.id}/register",
+        json={},
+        headers=auth_headers(player_solo),
+    )
+    assert resp_valid_solo.status_code == 201
+    assert resp_valid_solo.json()["team_id"] is None
+
+    # 2. VALORANT 2v2 (Duo) tournament
+    val_duo_t = Tournament(
+        title="VALORANT 2v2 Duels",
+        game_title="VALORANT",
+        format=TournamentFormat.DUO,
+        status=TournamentStatus.REGISTRATION_OPEN,
+        max_participants=25,
+        current_participants=0,
+        registration_deadline=now + timedelta(days=2),
+        start_datetime=now + timedelta(days=5),
+        organizer_id=org.id,
+        is_free_entry=True,
+        require_complete_teams=True,
+    )
+    db_session.add(val_duo_t)
+    db_session.commit()
+
+    # Duo tournament rejects registration without team_id
+    resp_no_team = client.post(
+        f"/api/v1/tournaments/{val_duo_t.id}/register",
+        json={},
+        headers=auth_headers(captain_val),
+    )
+    assert resp_no_team.status_code == 422
+
+    # Create team with only 1 member (captain only)
+    solo_val_team = Team(
+        name="Solo VAL Team",
+        tag="SVAL",
+        primary_game="VALORANT",
+        captain_id=captain_val.id,
+    )
+    db_session.add(solo_val_team)
+    db_session.flush()
+    db_session.add(TeamMember(team_id=solo_val_team.id, user_id=captain_val.id, role=TeamRole.CAPTAIN))
+    db_session.commit()
+
+    # Rejected because require_complete_teams requires 2 members for duo
+    resp_incomplete = client.post(
+        f"/api/v1/tournaments/{val_duo_t.id}/register",
+        json={"team_id": solo_val_team.id},
+        headers=auth_headers(captain_val),
+    )
+    assert resp_incomplete.status_code == 400
+    assert "at least 2 members are required" in resp_incomplete.json()["detail"]
+
+    # Add 2nd member to team
+    val_member2 = create_user("val_m2", "val_m2@gamerbrac.com", role=UserRole.PLAYER)
+    db_session.add(TeamMember(team_id=solo_val_team.id, user_id=val_member2.id, role=TeamRole.PLAYER))
+    db_session.commit()
+
+    # Now registration succeeds
+    resp_complete = client.post(
+        f"/api/v1/tournaments/{val_duo_t.id}/register",
+        json={"team_id": solo_val_team.id},
+        headers=auth_headers(captain_val),
+    )
+    assert resp_complete.status_code == 201
+    assert resp_complete.json()["team_id"] == solo_val_team.id
+
+    # Duplicate team registration rejected
+    resp_dup = client.post(
+        f"/api/v1/tournaments/{val_duo_t.id}/register",
+        json={"team_id": solo_val_team.id},
+        headers=auth_headers(captain_val),
+    )
+    assert resp_dup.status_code == 400
+
+
+def test_organizer_participant_management_and_status_transitions(
+    client: TestClient,
+    db_session: Session,
+    create_user: Callable,
+    auth_headers: Callable,
+):
+    """Verify organizer participant visibility, check-in, and disqualification actions."""
+    org = _create_org(create_user, "org_mgr_1")
+    other_org = _create_org(create_user, "org_mgr_other")
+    player = create_user("player_mgr_1", "player_mgr_1@gamerbrac.com", role=UserRole.PLAYER)
+    now = datetime.now(timezone.utc)
+
+    t = Tournament(
+        title="Management Test Open",
+        game_title="BGMI",
+        format=TournamentFormat.SOLO,
+        status=TournamentStatus.REGISTRATION_OPEN,
+        max_participants=50,
+        current_participants=0,
+        registration_deadline=now + timedelta(days=2),
+        start_datetime=now + timedelta(days=5),
+        organizer_id=org.id,
+        is_free_entry=True,
+    )
+    db_session.add(t)
+    db_session.commit()
+
+    # Player registers
+    reg_res = client.post(
+        f"/api/v1/tournaments/{t.id}/register",
+        json={},
+        headers=auth_headers(player),
+    )
+    assert reg_res.status_code == 201
+    part_id = reg_res.json()["id"]
+
+    # Non-owner organizer cannot modify participant status (403)
+    resp_unauth = client.patch(
+        f"/api/v1/tournaments/{t.id}/participants/{part_id}/status",
+        json={"status": "checked_in"},
+        headers=auth_headers(other_org),
+    )
+    assert resp_unauth.status_code == 403
+
+    # Owner organizer can manually check in participant
+    resp_checkin = client.patch(
+        f"/api/v1/tournaments/{t.id}/participants/{part_id}/status",
+        json={"status": "checked_in"},
+        headers=auth_headers(org),
+    )
+    assert resp_checkin.status_code == 200
+    assert resp_checkin.json()["status"] == "checked_in"
+
+    # Owner organizer can disqualify participant, adjusting participant count
+    resp_disqualify = client.patch(
+        f"/api/v1/tournaments/{t.id}/participants/{part_id}/status",
+        json={"status": "disqualified"},
+        headers=auth_headers(org),
+    )
+    assert resp_disqualify.status_code == 200
+    assert resp_disqualify.json()["status"] == "disqualified"
+
+    db_session.expire_all()
+    t_after = db_session.query(Tournament).filter(Tournament.id == t.id).first()
+    assert t_after.current_participants == 0

@@ -91,7 +91,7 @@ export const RoleWorkflow: React.FC = () => {
             <Lock className="w-3.5 h-3.5 text-cyan-400" />
             <span>Role-Based Access Control Architecture</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight uppercase leading-none">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-black text-white tracking-tight uppercase leading-tight sm:leading-none">
             BUILT FOR PLAYERS,{' '}
             <span className="bg-gradient-to-r from-violet-400 to-cyan-300 bg-clip-text text-transparent">
               ORGANIZERS &amp; ADMINS
@@ -104,13 +104,13 @@ export const RoleWorkflow: React.FC = () => {
         </div>
 
         {/* Role cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-7">
           {ROLES.map((role) => {
             const Icon = role.icon;
             return (
               <div
                 key={role.number}
-                className={`group relative p-8 rounded-2xl bg-[#0e1020]/80 border ${role.borderClass} ${role.glowClass} backdrop-blur-sm hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col`}
+                className={`group relative p-5 sm:p-8 rounded-2xl bg-[#0e1020]/80 border ${role.borderClass} ${role.glowClass} backdrop-blur-sm hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col`}
               >
                 {/* Corner glow orb */}
                 <div className={`absolute top-0 right-0 w-40 h-40 ${role.orbClass} rounded-full blur-3xl pointer-events-none`} />

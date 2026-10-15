@@ -292,17 +292,17 @@ export const AdminPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 animate-entrance">
       {/* Super-Admin Header */}
-      <div className="p-8 rounded-3xl card-glass-heavy border border-amber-700/40 shadow-[0_0_40px_rgba(245,158,11,0.18)] flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+      <div className="p-4 sm:p-8 rounded-2xl sm:rounded-3xl card-glass-heavy border border-amber-700/40 shadow-[0_0_40px_rgba(245,158,11,0.18)] flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-80 h-40 bg-amber-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="flex items-center space-x-5 relative z-10">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-600 to-rose-600 p-[1.5px] shadow-[0_0_24px_rgba(245,158,11,0.4)]">
+        <div className="flex items-center space-x-4 sm:space-x-5 relative z-10">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 shrink-0 rounded-2xl bg-gradient-to-tr from-amber-600 to-rose-600 p-[1.5px] shadow-[0_0_24px_rgba(245,158,11,0.4)]">
             <div className="w-full h-full bg-[#0a0b14] rounded-[14px] flex items-center justify-center text-amber-400">
-              <Sliders className="w-8 h-8" />
+              <Sliders className="w-7 h-7 sm:w-8 sm:h-8" />
             </div>
           </div>
           <div className="space-y-1">
-            <div className="flex items-center space-x-2.5">
-              <h1 className="text-2xl font-black text-white tracking-tight">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
                 Platform Administration
               </h1>
               <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-amber-950/90 border border-amber-600/60 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.3)]">
@@ -315,10 +315,10 @@ export const AdminPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center space-x-3 relative z-10">
+        <div className="flex flex-wrap items-center gap-2 sm:space-x-3 relative z-10">
           <Link
             to="/organizer"
-            className="px-4 py-2.5 rounded-xl bg-[#111422] hover:bg-[#1a1d30] border border-violet-800/40 text-gray-300 hover:text-white text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 transition-all shadow-sm"
+            className="min-h-[44px] px-4 py-2.5 rounded-xl bg-[#111422] hover:bg-[#1a1d30] border border-violet-800/40 text-gray-300 hover:text-white text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 transition-all shadow-sm"
           >
             <span>Organizer Console</span>
             <ChevronRight className="w-3.5 h-3.5" />
@@ -330,8 +330,9 @@ export const AdminPage: React.FC = () => {
               else if (activeTab === 'reports') fetchReports();
               else if (activeTab === 'audit') fetchAuditLogs();
             }}
-            className="p-2.5 rounded-xl bg-[#111422] hover:bg-[#1a1d30] border border-violet-800/40 text-gray-400 hover:text-white transition-colors cursor-pointer"
+            className="min-w-[44px] min-h-[44px] p-2.5 rounded-xl bg-[#111422] hover:bg-[#1a1d30] border border-violet-800/40 text-gray-400 hover:text-white transition-colors cursor-pointer flex items-center justify-center"
             title="Refresh Data"
+            aria-label="Refresh Data"
           >
             <RefreshCw className="w-4 h-4" />
           </button>
@@ -392,10 +393,10 @@ export const AdminPage: React.FC = () => {
       </div>
 
       {/* Admin Tabs */}
-      <div className="flex border-b border-violet-900/30 space-x-6 text-sm font-semibold">
+      <div className="flex border-b border-violet-900/30 space-x-6 text-sm font-semibold overflow-x-auto scrollbar-none pb-px">
         <button
           onClick={() => setActiveTab('approvals')}
-          className={`pb-3 flex items-center space-x-2 transition-colors relative ${
+          className={`shrink-0 min-h-[44px] pb-3 flex items-center space-x-2 transition-colors relative ${
             activeTab === 'approvals' ? 'text-amber-400' : 'text-gray-400 hover:text-white'
           }`}
         >
@@ -413,7 +414,7 @@ export const AdminPage: React.FC = () => {
 
         <button
           onClick={() => setActiveTab('users')}
-          className={`pb-3 flex items-center space-x-2 transition-colors relative ${
+          className={`shrink-0 min-h-[44px] pb-3 flex items-center space-x-2 transition-colors relative ${
             activeTab === 'users' ? 'text-amber-400' : 'text-gray-400 hover:text-white'
           }`}
         >
@@ -426,7 +427,7 @@ export const AdminPage: React.FC = () => {
 
         <button
           onClick={() => setActiveTab('reports')}
-          className={`pb-3 flex items-center space-x-2 transition-colors relative ${
+          className={`shrink-0 min-h-[44px] pb-3 flex items-center space-x-2 transition-colors relative ${
             activeTab === 'reports' ? 'text-amber-400' : 'text-gray-400 hover:text-white'
           }`}
         >
@@ -439,7 +440,7 @@ export const AdminPage: React.FC = () => {
 
         <button
           onClick={() => setActiveTab('audit')}
-          className={`pb-3 flex items-center space-x-2 transition-colors relative ${
+          className={`shrink-0 min-h-[44px] pb-3 flex items-center space-x-2 transition-colors relative ${
             activeTab === 'audit' ? 'text-amber-400' : 'text-gray-400 hover:text-white'
           }`}
         >
@@ -784,13 +785,17 @@ export const AdminPage: React.FC = () => {
       {/* SUSPENSION MODAL */}
       {selectedUserForSuspend && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-md rounded-3xl bg-[#0e101a] border border-rose-900/60 p-6 space-y-4 shadow-2xl">
+          <div className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl sm:rounded-3xl bg-[#0e101a] border border-rose-900/60 p-5 sm:p-6 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between pb-2 border-b border-violet-900/30">
               <h3 className="text-base font-bold text-white flex items-center space-x-2 text-rose-400">
                 <Ban className="w-5 h-5" />
                 <span>Suspend User Account</span>
               </h3>
-              <button onClick={() => setSelectedUserForSuspend(null)} className="text-gray-400 hover:text-white">
+              <button
+                onClick={() => setSelectedUserForSuspend(null)}
+                className="min-w-[44px] min-h-[44px] -mr-2 flex items-center justify-center text-gray-400 hover:text-white cursor-pointer"
+                aria-label="Close modal"
+              >
                 <XCircle className="w-5 h-5" />
               </button>
             </div>
@@ -819,14 +824,14 @@ export const AdminPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setSelectedUserForSuspend(null)}
-                  className="px-3 py-1.5 rounded-lg bg-[#141624] text-gray-300"
+                  className="min-h-[40px] px-3.5 py-1.5 rounded-lg bg-[#141624] text-gray-300"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-4 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold"
+                  className="min-h-[40px] px-4 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold"
                 >
                   {actionLoading ? 'Suspending...' : 'Confirm Suspension'}
                 </button>
@@ -839,13 +844,17 @@ export const AdminPage: React.FC = () => {
       {/* RESOLVE REPORT MODAL */}
       {selectedReportForResolve && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-md rounded-3xl bg-[#0e101a] border border-violet-900/60 p-6 space-y-4 shadow-2xl">
+          <div className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl sm:rounded-3xl bg-[#0e101a] border border-violet-900/60 p-5 sm:p-6 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between pb-2 border-b border-violet-900/30">
               <h3 className="text-base font-bold text-white flex items-center space-x-2">
                 <FileText className="w-5 h-5 text-cyan-400" />
                 <span>Resolve Dispute Report</span>
               </h3>
-              <button onClick={() => setSelectedReportForResolve(null)} className="text-gray-400 hover:text-white">
+              <button
+                onClick={() => setSelectedReportForResolve(null)}
+                className="min-w-[44px] min-h-[44px] -mr-2 flex items-center justify-center text-gray-400 hover:text-white cursor-pointer"
+                aria-label="Close modal"
+              >
                 <XCircle className="w-5 h-5" />
               </button>
             </div>
@@ -889,14 +898,14 @@ export const AdminPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setSelectedReportForResolve(null)}
-                  className="px-3 py-1.5 rounded-lg bg-[#141624] text-gray-300"
+                  className="min-h-[40px] px-3.5 py-1.5 rounded-lg bg-[#141624] text-gray-300"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-4 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white font-bold"
+                  className="min-h-[40px] px-4 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white font-bold"
                 >
                   {actionLoading ? 'Saving...' : 'Submit Resolution'}
                 </button>

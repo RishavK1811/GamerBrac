@@ -80,7 +80,7 @@ export const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-16 relative">
+    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-8 sm:py-16 relative">
       {/* Ambient background glows */}
       <div
         className="absolute top-1/4 left-1/4 w-80 h-80 rounded-full pointer-events-none"
@@ -93,7 +93,7 @@ export const RegisterPage: React.FC = () => {
 
       <div className="w-full max-w-md relative z-10 animate-entrance">
         {/* Card */}
-        <div className="rounded-2xl border border-violet-700/35 shadow-[0_0_50px_rgba(6,182,212,0.15)] overflow-hidden card-glass-heavy p-8 space-y-6">
+        <div className="rounded-2xl border border-violet-700/35 shadow-[0_0_50px_rgba(6,182,212,0.15)] overflow-hidden card-glass-heavy p-5 sm:p-8 space-y-6">
 
           {/* Header */}
           <div className="text-center space-y-3">
@@ -103,7 +103,7 @@ export const RegisterPage: React.FC = () => {
               </div>
             </div>
             <div>
-              <h1 className="text-2xl font-black tracking-tight text-white uppercase">
+              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white uppercase">
                 Create Player Account
               </h1>
               <p className="text-xs text-gray-400 mt-1">
@@ -145,7 +145,7 @@ export const RegisterPage: React.FC = () => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="shadow_sniper"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#080912]/80 border border-violet-800/40 hover:border-violet-600/60 focus:border-cyan-500 text-white placeholder-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/30 transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#080912]/80 border border-violet-800/40 hover:border-violet-600/60 focus:border-cyan-500 text-white placeholder-gray-600 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/30 transition-all"
                 />
               </div>
               <p className="text-[10px] text-gray-500">3-30 chars, lowercase letters, numbers, and underscores only</p>
@@ -171,7 +171,7 @@ export const RegisterPage: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="player@gamerbrac.com"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#080912]/80 border border-violet-800/40 hover:border-violet-600/60 focus:border-cyan-500 text-white placeholder-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/30 transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#080912]/80 border border-violet-800/40 hover:border-violet-600/60 focus:border-cyan-500 text-white placeholder-gray-600 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/30 transition-all"
                 />
               </div>
             </div>
@@ -196,7 +196,7 @@ export const RegisterPage: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#080912]/80 border border-violet-800/40 hover:border-violet-600/60 focus:border-cyan-500 text-white placeholder-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/30 transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#080912]/80 border border-violet-800/40 hover:border-violet-600/60 focus:border-cyan-500 text-white placeholder-gray-600 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/30 transition-all"
                 />
               </div>
 
@@ -241,7 +241,7 @@ export const RegisterPage: React.FC = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#080912]/80 border border-violet-800/40 hover:border-violet-600/60 focus:border-cyan-500 text-white placeholder-gray-600 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/30 transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#080912]/80 border border-violet-800/40 hover:border-violet-600/60 focus:border-cyan-500 text-white placeholder-gray-600 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/30 transition-all"
                 />
               </div>
               {confirmPassword.length > 0 && passwordsMatch && (
@@ -257,7 +257,7 @@ export const RegisterPage: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-3.5 rounded-xl btn-neon-shimmer disabled:opacity-50 disabled:cursor-not-allowed disabled:animate-none text-white font-bold text-xs uppercase tracking-wider shadow-[0_0_24px_rgba(6,182,212,0.35)] hover:shadow-[0_0_35px_rgba(6,182,212,0.55)] transition-shadow flex items-center justify-center space-x-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-cyan-400/50 mt-2"
+              className="w-full min-h-[44px] py-3.5 rounded-xl btn-neon-shimmer disabled:opacity-50 disabled:cursor-not-allowed disabled:animate-none text-white font-bold text-xs uppercase tracking-wider shadow-[0_0_24px_rgba(6,182,212,0.35)] hover:shadow-[0_0_35px_rgba(6,182,212,0.55)] transition-shadow flex items-center justify-center space-x-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-cyan-400/50 mt-2"
             >
               {isSubmitting ? (
                 <>

@@ -15,6 +15,7 @@ import {
 import { TournamentDetailPage } from './pages/TournamentDetailPage';
 import { AuthProvider } from './context';
 import * as AuthContextModule from './context/useAuth';
+import { tournamentsApi, teamsApi, matchesApi } from './api/client';
 import type { TournamentDetail } from './types';
 
 describe('GamerBrac Tournament System — Config & Math Engine', () => {
@@ -407,5 +408,132 @@ describe('TournamentDetailPage — System UI Rendering', () => {
     const gatedBtn = await screen.findByRole('button', { name: /Paid Registration Gated \(Preview\)/i });
     expect(gatedBtn).toBeInTheDocument();
     expect(gatedBtn).toBeDisabled();
+  });
+
+  const mockFreeTournament: TournamentDetail = {
+    id: 'tourney-free-system-1',
+    title: 'Free Fire MAX Weekly Clash',
+    game_title: 'Free Fire MAX',
+    format: 'solo',
+    status: 'registration_open',
+    max_participants: 50,
+    current_participants: 10,
+    registration_deadline: '2027-05-01T18:00:00Z',
+    start_datetime: '2027-05-02T14:00:00Z',
+    organizer_id: 'org-sys-1',
+    is_free_entry: true,
+    entry_fee_per_player: 0,
+    team_size: 1,
+    max_player_slots: 50,
+    current_player_slots: 10,
+    team_entry_fee: 0,
+    min_participants_30pct: 15,
+    min_players_30pct: 15,
+    confirmed_entries_count: 10,
+    min_participation_met: false,
+    prize_pool_preview: 0,
+    require_complete_teams: false,
+    rules: 'Official Free Fire tournament scoring.',
+    prize_pool_description: 'Free to enter.',
+  };
+
+  it('renders Join Free Tournament CTA for un-joined player', async () => {
+    vi.spyOn(AuthContextModule, 'useAuth').mockReturnValue({
+      user: {
+        id: 'user-player-1',
+        username: 'pro_player_1',
+        email: 'pro@example.com',
+        role: 'player',
+        is_active: true,
+        is_verified: true,
+        created_at: '2026-01-01T00:00:00Z',
+        updated_at: '2026-01-01T00:00:00Z',
+      },
+      token: 'mock-token',
+      isAuthenticated: true,
+      isLoading: false,
+      login: vi.fn(),
+      register: vi.fn(),
+      logout: vi.fn(),
+      refreshProfile: vi.fn(),
+      clearError: vi.fn(),
+    });
+
+    vi.spyOn(tournamentsApi, 'getById').mockResolvedValue(mockFreeTournament);
+    vi.spyOn(tournamentsApi, 'getMyTournaments').mockResolvedValue([]);
+    vi.spyOn(teamsApi, 'getMyTeams').mockResolvedValue([]);
+    vi.spyOn(matchesApi, 'listTournamentMatches').mockResolvedValue([]);
+
+    render(
+      <AuthProvider>
+        <MemoryRouter initialEntries={['/tournaments/tourney-free-system-1']}>
+          <Routes>
+            <Route path="/tournaments/:id" element={<TournamentDetailPage />} />
+          </Routes>
+        </MemoryRouter>
+      </AuthProvider>
+    );
+
+    // Join Free Tournament button must be present
+    const joinBtn = await screen.findByRole('button', { name: /Join Free Tournament/i });
+    expect(joinBtn).toBeInTheDocument();
+    expect(joinBtn).toBeEnabled();
+  });
+
+  it('renders Joined / Registered state when user is registered with details', async () => {
+    vi.spyOn(AuthContextModule, 'useAuth').mockReturnValue({
+      user: {
+        id: 'user-player-1',
+        username: 'pro_player_1',
+        email: 'pro@example.com',
+        role: 'player',
+        is_active: true,
+        is_verified: true,
+        created_at: '2026-01-01T00:00:00Z',
+        updated_at: '2026-01-01T00:00:00Z',
+      },
+      token: 'mock-token',
+      isAuthenticated: true,
+      isLoading: false,
+      login: vi.fn(),
+      register: vi.fn(),
+      logout: vi.fn(),
+      refreshProfile: vi.fn(),
+      clearError: vi.fn(),
+    });
+
+    vi.spyOn(tournamentsApi, 'getById').mockResolvedValue(mockFreeTournament);
+    vi.spyOn(tournamentsApi, 'getMyTournaments').mockResolvedValue([
+      {
+        participant_id: 'part-123',
+        tournament_id: 'tourney-free-system-1',
+        tournament_title: 'Free Fire MAX Weekly Clash',
+        game_title: 'Free Fire MAX',
+        format: 'solo',
+        status: 'registration_open',
+        max_participants: 50,
+        current_participants: 10,
+        start_datetime: '2027-05-02T14:00:00Z',
+        registration_deadline: '2027-05-01T18:00:00Z',
+        participant_status: 'REGISTERED',
+        registered_at: '2027-04-20T10:00:00Z',
+      },
+    ]);
+    vi.spyOn(teamsApi, 'getMyTeams').mockResolvedValue([]);
+    vi.spyOn(matchesApi, 'listTournamentMatches').mockResolvedValue([]);
+
+    render(
+      <AuthProvider>
+        <MemoryRouter initialEntries={['/tournaments/tourney-free-system-1']}>
+          <Routes>
+            <Route path="/tournaments/:id" element={<TournamentDetailPage />} />
+          </Routes>
+        </MemoryRouter>
+      </AuthProvider>
+    );
+
+    expect(await screen.findByText(/You are registered for this event/i)).toBeVisible();
+    expect(screen.getAllByText(/Joined \/ Registered/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/Status: REGISTERED/i)).toBeInTheDocument();
   });
 });

@@ -247,6 +247,7 @@ class MyRegistrationItem(BaseModel):
 
     participant_id: str
     tournament_id: str
+    user_id: Optional[str] = None
     tournament_title: str
     game_title: str
     format: str

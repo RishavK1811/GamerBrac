@@ -2,6 +2,7 @@ from datetime import datetime, time, timedelta, timezone
 from typing import List, Optional
 import zoneinfo
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -19,7 +20,7 @@ from app.core.tournament_config import (
     get_team_size,
 )
 from app.models.player import SupportedGame
-from app.models.team import Team
+from app.models.team import Team, TeamMember
 from app.models.tournament import (
     ALLOWED_TRANSITIONS,
     ParticipantStatus,
@@ -325,15 +326,27 @@ def get_my_tournaments(
     db: Session = Depends(get_db),
 ) -> List[MyRegistrationItem]:
     """Retrieve all tournaments where the current user (or their team) is registered."""
+    user_team_ids = [
+        tm.team_id
+        for tm in db.query(TeamMember.team_id).filter(TeamMember.user_id == current_user.id).all()
+    ]
+    filters = [TournamentParticipant.user_id == current_user.id]
+    if user_team_ids:
+        filters.append(TournamentParticipant.team_id.in_(user_team_ids))
+
     participants = (
         db.query(TournamentParticipant)
-        .filter(TournamentParticipant.user_id == current_user.id)
+        .filter(or_(*filters))
         .order_by(TournamentParticipant.registered_at.desc())
         .all()
     )
 
+    seen_ids = set()
     result = []
     for p in participants:
+        if p.id in seen_ids:
+            continue
+        seen_ids.add(p.id)
         t = p.tournament
         team_name = p.team.name if p.team else None
         team_tag = p.team.tag if p.team else None
@@ -342,6 +355,7 @@ def get_my_tournaments(
             MyRegistrationItem(
                 participant_id=p.id,
                 tournament_id=t.id,
+                user_id=p.user_id,
                 tournament_title=t.title,
                 game_title=t.game_title,
                 format=t.format,

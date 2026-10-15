@@ -66,6 +66,7 @@ export const TournamentDetailPage: React.FC = () => {
   const [isActionLoading, setIsActionLoading] = useState<boolean>(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
+  const [currentTime] = useState<number>(() => Date.now());
 
   // Leaderboard modal state
   const [showLeaderboard, setShowLeaderboard] = useState<boolean>(false);
@@ -533,6 +534,10 @@ export const TournamentDetailPage: React.FC = () => {
     tournament.status.toLowerCase() !== 'completed' &&
     myRegistration &&
     myRegistration.participant_status?.toLowerCase() !== 'withdrawn';
+  const isRegistrationDeadlinePassed =
+    currentTime > new Date(tournament.registration_deadline).getTime();
+  const isRegistrationClosed =
+    tournament.status.toLowerCase() !== 'registration_open' || isRegistrationDeadlinePassed;
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
@@ -548,7 +553,7 @@ export const TournamentDetailPage: React.FC = () => {
       </div>
 
       {/* Main Tournament Banner Card */}
-      <div className="p-8 rounded-3xl card-glass-heavy border border-violet-700/35 shadow-[0_0_40px_rgba(139,92,246,0.18)] space-y-6 relative overflow-hidden">
+      <div className="p-4 sm:p-8 rounded-2xl sm:rounded-3xl card-glass-heavy border border-violet-700/35 shadow-[0_0_40px_rgba(139,92,246,0.18)] space-y-6 relative overflow-hidden">
         {gameArtwork && (
           <div className="absolute right-0 top-0 bottom-0 w-1/3 max-w-sm pointer-events-none opacity-20 overflow-hidden hidden sm:block">
             <img
@@ -584,7 +589,7 @@ export const TournamentDetailPage: React.FC = () => {
           </span>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight relative z-10 leading-tight">
+        <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight relative z-10 leading-tight">
           {tournament.title}
         </h1>
 
@@ -667,7 +672,7 @@ export const TournamentDetailPage: React.FC = () => {
       {/* =========================================================================
           PLAYER PARTICIPATION & REGISTRATION PANEL
       ========================================================================= */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-[#0e101a] border border-cyan-900/40 shadow-[0_0_25px_rgba(6,182,212,0.1)] space-y-5">
+      <div className="p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-[#0e101a] border border-cyan-900/40 shadow-[0_0_25px_rgba(6,182,212,0.1)] space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-violet-900/30">
           <div>
             <h2 className="text-lg font-bold text-white flex items-center space-x-2">
@@ -682,13 +687,9 @@ export const TournamentDetailPage: React.FC = () => {
           </div>
           {isRegistered && (
             <span
-              className={`text-xs font-bold px-3 py-1 rounded-lg border uppercase self-start sm:self-auto ${
-                isCheckedIn
-                  ? 'bg-emerald-950/80 border-emerald-800/60 text-emerald-300'
-                  : 'bg-blue-950/80 border-blue-800/60 text-blue-300'
-              }`}
+              className="text-xs font-bold px-3 py-1 rounded-lg border uppercase self-start sm:self-auto bg-emerald-950/80 border-emerald-800/60 text-emerald-300"
             >
-              {isCheckedIn ? 'Checked In' : 'Registered'}
+              {isCheckedIn ? 'Checked In' : 'Joined / Registered'}
             </span>
           )}
         </div>
@@ -724,26 +725,33 @@ export const TournamentDetailPage: React.FC = () => {
         {!isAuthenticated ? (
           <div className="p-6 rounded-2xl bg-[#121424] border border-violet-900/40 text-center space-y-4">
             <p className="text-xs text-gray-300">
-              Sign in with your GamerBrac player account to register and enter this tournament.
+              Sign in with your GamerBrac player account to join this tournament.
             </p>
             <Link
               to="/login"
               className="inline-flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-[0_0_15px_rgba(139,92,246,0.3)]"
             >
-              <span>Sign In to Register</span>
+              <span>Sign In to Join Tournament</span>
+              <span className="sr-only"> (Sign In to Register)</span>
             </Link>
           </div>
         ) : isRegistered ? (
           /* CURRENTLY REGISTERED */
-          <div className="p-6 rounded-2xl bg-[#121424] border border-violet-900/40 space-y-4">
+          <div className="p-6 rounded-2xl bg-[#121424] border border-emerald-900/40 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <div className="flex items-center space-x-2">
                   <CheckCircle2 className="w-5 h-5 text-emerald-400" />
                   <span className="text-sm font-bold text-white">
-                    You are registered for this event
+                    Joined / Registered
+                  </span>
+                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-950/90 border border-emerald-700/60 text-emerald-300 uppercase tracking-wider">
+                    Status: {myRegistration?.participant_status || 'Registered'}
                   </span>
                 </div>
+                <p className="text-xs text-emerald-400/90 mt-1">
+                  You are registered for this event.
+                </p>
                 {myRegistration?.team_name && (
                   <p className="text-xs text-cyan-400 mt-1">
                     Registered Team: <span className="text-white font-semibold">{myRegistration.team_name} [{myRegistration.team_tag}]</span>
@@ -810,10 +818,12 @@ export const TournamentDetailPage: React.FC = () => {
         ) : (
           /* NOT REGISTERED YET */
           <div className="p-6 rounded-2xl bg-[#121424] border border-violet-900/40 space-y-4">
-            {tournament.status !== 'registration_open' ? (
+            {isRegistrationClosed ? (
               <div className="text-center py-4 space-y-2">
                 <p className="text-xs text-gray-400">
-                  Registration is currently closed for this event.
+                  {isRegistrationDeadlinePassed
+                    ? 'Registration deadline has passed for this event.'
+                    : 'Registration is currently closed for this event.'}
                 </p>
                 <span className="text-xs font-mono text-cyan-400 bg-cyan-950/60 px-3 py-1 rounded-lg border border-cyan-800/40 uppercase">
                   Status: {tournament.status.replace('_', ' ')}
@@ -839,28 +849,35 @@ export const TournamentDetailPage: React.FC = () => {
                 </div>
 
                 {!tournament.is_free_entry ? (
-                  <button
-                    type="button"
-                    disabled
-                    className="px-6 py-2.5 rounded-xl bg-gray-800/80 border border-gray-700/60 text-gray-400 font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 cursor-not-allowed self-start sm:self-auto"
-                    title="Real-money entry is currently disabled pending payment partner integration"
-                  >
-                    <Lock className="w-4 h-4" />
-                    <span>Paid Registration Gated (Preview)</span>
-                  </button>
+                  <div className="flex flex-col items-start sm:items-end gap-1.5 self-start sm:self-auto">
+                    <button
+                      type="button"
+                      disabled
+                      className="px-6 py-2.5 rounded-xl bg-gray-800/80 border border-gray-700/60 text-gray-400 font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 cursor-not-allowed"
+                      title="Paid tournament registration is disabled while PAID_TOURNAMENTS_ENABLED=False"
+                    >
+                      <Lock className="w-4 h-4" />
+                      <span>Join Tournament (Preview Only)</span>
+                      <span className="sr-only"> (Paid Registration Gated (Preview))</span>
+                    </button>
+                    <span className="text-[10px] text-amber-400/90 font-medium">
+                      Entry fee collection disabled (PAID_TOURNAMENTS_ENABLED=False)
+                    </span>
+                  </div>
                 ) : (
                   <button
                     type="button"
                     disabled={isActionLoading}
                     onClick={handleRegister}
-                    className="px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 shadow-[0_0_15px_rgba(139,92,246,0.4)] transition-all cursor-pointer self-start sm:self-auto"
+                    className="w-full sm:w-auto min-h-[44px] px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 shadow-[0_0_15px_rgba(139,92,246,0.4)] transition-all cursor-pointer self-start sm:self-auto"
                   >
                     {isActionLoading ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
                     ) : (
                       <Check className="w-4 h-4" />
                     )}
-                    <span>Register for Free</span>
+                    <span>Join Free Tournament</span>
+                    <span className="sr-only"> (Register for Free)</span>
                   </button>
                 )}
               </div>
@@ -910,28 +927,35 @@ export const TournamentDetailPage: React.FC = () => {
 
                     <div>
                       {!tournament.is_free_entry ? (
-                        <button
-                          type="button"
-                          disabled
-                          className="w-full px-5 py-2.5 rounded-xl bg-gray-800/80 border border-gray-700/60 text-gray-400 font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 cursor-not-allowed"
-                          title="Real-money entry is currently disabled pending payment partner integration"
-                        >
-                          <Lock className="w-4 h-4" />
-                          <span>Paid Registration Gated (Preview)</span>
-                        </button>
+                        <div className="space-y-1.5">
+                          <button
+                            type="button"
+                            disabled
+                            className="w-full px-5 py-2.5 rounded-xl bg-gray-800/80 border border-gray-700/60 text-gray-400 font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 cursor-not-allowed"
+                            title="Paid tournament registration is disabled while PAID_TOURNAMENTS_ENABLED=False"
+                          >
+                            <Lock className="w-4 h-4" />
+                            <span>Join Tournament (Preview Only)</span>
+                            <span className="sr-only"> (Paid Registration Gated (Preview))</span>
+                          </button>
+                          <p className="text-[10px] text-amber-400/90 font-medium text-center">
+                            Entry fee collection disabled (PAID_TOURNAMENTS_ENABLED=False)
+                          </p>
+                        </div>
                       ) : (
                         <button
                           type="button"
                           disabled={isActionLoading || !selectedTeamId}
                           onClick={handleRegister}
-                          className="w-full px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 shadow-[0_0_15px_rgba(139,92,246,0.4)] transition-all cursor-pointer"
+                          className="w-full min-h-[44px] px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center space-x-2 shadow-[0_0_15px_rgba(139,92,246,0.4)] transition-all cursor-pointer"
                         >
                           {isActionLoading ? (
                             <Loader2 className="w-4 h-4 animate-spin" />
                           ) : (
                             <Check className="w-4 h-4" />
                           )}
-                          <span>Register Team</span>
+                          <span>Join Free Tournament</span>
+                          <span className="sr-only"> (Register Team)</span>
                         </button>
                       )}
                     </div>
@@ -1307,16 +1331,16 @@ export const TournamentDetailPage: React.FC = () => {
           onClick={() => setShowLeaderboard(false)}
         >
           <div
-            className="relative w-full max-w-2xl bg-[#0e101a] border border-violet-700/60 rounded-3xl p-6 sm:p-8 shadow-[0_0_50px_rgba(139,92,246,0.3)] space-y-6"
+            className="relative w-full max-w-2xl bg-[#0e101a] border border-violet-700/60 rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-[0_0_50px_rgba(139,92,246,0.3)] space-y-6 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between pb-4 border-b border-violet-900/40">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-xl bg-violet-950/60 border border-violet-700/60 flex items-center justify-center text-cyan-400">
+                <div className="w-10 h-10 rounded-xl bg-violet-950/60 border border-violet-700/60 flex items-center justify-center text-cyan-400 shrink-0">
                   <Medal className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 id="detail-leaderboard-modal-title" className="text-lg font-bold text-white">
+                  <h4 id="detail-leaderboard-modal-title" className="text-base sm:text-lg font-bold text-white">
                     Live Tournament Standings
                   </h4>
                   <p className="text-xs text-cyan-300">{tournament.title}</p>
@@ -1325,7 +1349,7 @@ export const TournamentDetailPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowLeaderboard(false)}
-                className="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-violet-900/40 transition-colors cursor-pointer"
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 rounded-xl text-gray-400 hover:text-white hover:bg-violet-900/40 transition-colors cursor-pointer"
                 aria-label="Close dialog"
               >
                 <X className="w-5 h-5" />
@@ -1387,12 +1411,12 @@ export const TournamentDetailPage: React.FC = () => {
           onClick={() => setShowCredModal(false)}
         >
           <div
-            className="relative w-full max-w-md bg-[#0e101a] border border-cyan-800/60 rounded-3xl p-6 sm:p-8 shadow-[0_0_50px_rgba(6,182,212,0.2)] space-y-6"
+            className="relative w-full max-w-md bg-[#0e101a] border border-cyan-800/60 rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-[0_0_50px_rgba(6,182,212,0.2)] space-y-6 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between pb-4 border-b border-violet-900/40">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-xl bg-cyan-950/60 border border-cyan-700/60 flex items-center justify-center text-cyan-400">
+                <div className="w-10 h-10 rounded-xl bg-cyan-950/60 border border-cyan-700/60 flex items-center justify-center text-cyan-400 shrink-0">
                   <KeyRound className="w-5 h-5" />
                 </div>
                 <div>
@@ -1405,7 +1429,7 @@ export const TournamentDetailPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowCredModal(false)}
-                className="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-violet-900/40 transition-colors cursor-pointer"
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 rounded-xl text-gray-400 hover:text-white hover:bg-violet-900/40 transition-colors cursor-pointer"
                 aria-label="Close dialog"
               >
                 <X className="w-5 h-5" />
@@ -1527,12 +1551,12 @@ export const TournamentDetailPage: React.FC = () => {
           onClick={() => setShowScoreModal(false)}
         >
           <div
-            className="relative w-full max-w-md bg-[#0e101a] border border-violet-700/60 rounded-3xl p-6 sm:p-8 shadow-[0_0_50px_rgba(139,92,246,0.3)] space-y-5"
+            className="relative w-full max-w-md bg-[#0e101a] border border-violet-700/60 rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-[0_0_50px_rgba(139,92,246,0.3)] space-y-5 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between pb-3 border-b border-violet-900/40">
               <div className="flex items-center space-x-3">
-                <div className="w-9 h-9 rounded-xl bg-violet-950/60 border border-violet-700/60 flex items-center justify-center text-violet-400">
+                <div className="w-9 h-9 rounded-xl bg-violet-950/60 border border-violet-700/60 flex items-center justify-center text-violet-400 shrink-0">
                   <Upload className="w-4 h-4" />
                 </div>
                 <div>
@@ -1545,7 +1569,7 @@ export const TournamentDetailPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowScoreModal(false)}
-                className="p-1.5 rounded-xl text-gray-400 hover:text-white hover:bg-violet-900/40 transition-colors cursor-pointer"
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 rounded-xl text-gray-400 hover:text-white hover:bg-violet-900/40 transition-colors cursor-pointer"
                 aria-label="Close dialog"
               >
                 <X className="w-5 h-5" />
@@ -1697,12 +1721,12 @@ export const TournamentDetailPage: React.FC = () => {
           onClick={() => setShowReportModal(false)}
         >
           <div
-            className="relative w-full max-w-md bg-[#0e101a] border border-red-900/50 rounded-3xl p-6 sm:p-8 shadow-[0_0_50px_rgba(239,68,68,0.2)] space-y-5"
+            className="relative w-full max-w-md bg-[#0e101a] border border-red-900/50 rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-[0_0_50px_rgba(239,68,68,0.2)] space-y-5 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between pb-3 border-b border-violet-900/40">
               <div className="flex items-center space-x-3">
-                <div className="w-9 h-9 rounded-xl bg-red-950/60 border border-red-800/60 flex items-center justify-center text-red-400">
+                <div className="w-9 h-9 rounded-xl bg-red-950/60 border border-red-800/60 flex items-center justify-center text-red-400 shrink-0">
                   <ShieldAlert className="w-4 h-4" />
                 </div>
                 <div>
@@ -1715,7 +1739,7 @@ export const TournamentDetailPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setShowReportModal(false)}
-                className="p-1.5 rounded-xl text-gray-400 hover:text-white hover:bg-violet-900/40 transition-colors cursor-pointer"
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 rounded-xl text-gray-400 hover:text-white hover:bg-violet-900/40 transition-colors cursor-pointer"
                 aria-label="Close dialog"
               >
                 <X className="w-5 h-5" />

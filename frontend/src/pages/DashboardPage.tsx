@@ -428,17 +428,17 @@ export const DashboardPage: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
       {/* Top Banner */}
-      <div className="p-8 rounded-3xl card-glass-heavy border border-violet-700/35 shadow-[0_0_40px_rgba(139,92,246,0.18)] flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+      <div className="p-4 sm:p-8 rounded-2xl sm:rounded-3xl card-glass-heavy border border-violet-700/35 shadow-[0_0_40px_rgba(139,92,246,0.18)] flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-80 h-40 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="flex items-center space-x-5 relative z-10">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-violet-600 via-indigo-600 to-cyan-400 p-[1.5px] shadow-[0_0_24px_rgba(139,92,246,0.4)]">
-            <div className="w-full h-full bg-[#0a0b14] rounded-[14px] flex items-center justify-center text-cyan-400 font-black text-xl">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 relative z-10">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-violet-600 via-indigo-600 to-cyan-400 p-[1.5px] shadow-[0_0_24px_rgba(139,92,246,0.4)] shrink-0">
+            <div className="w-full h-full bg-[#0a0b14] rounded-[14px] flex items-center justify-center text-cyan-400 font-black text-lg sm:text-xl">
               {(profile?.display_name || user.profile?.display_name || user.username || 'P')[0].toUpperCase()}
             </div>
           </div>
           <div className="space-y-1">
-            <div className="flex items-center space-x-2.5">
-              <h1 className="text-2xl font-black text-white tracking-tight">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
                 {profile?.display_name || user.profile?.display_name || user.username}
               </h1>
               <span className="text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider bg-violet-950/90 border border-violet-700/60 text-cyan-300">
@@ -457,11 +457,11 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 relative z-10">
+        <div className="flex flex-wrap items-center gap-2.5 relative z-10">
           {user.role === 'organizer' || user.role === 'admin' ? (
             <Link
               to="/organizer"
-              className="px-4 py-2 rounded-xl bg-violet-900/40 hover:bg-violet-800/60 border border-violet-600/50 text-white text-xs font-bold uppercase tracking-wider flex items-center space-x-2 transition-all shadow-sm"
+              className="min-h-[44px] px-4 py-2 rounded-xl bg-violet-900/40 hover:bg-violet-800/60 border border-violet-600/50 text-white text-xs font-bold uppercase tracking-wider flex items-center space-x-2 transition-all shadow-sm"
             >
               <Briefcase className="w-3.5 h-3.5 text-cyan-400" />
               <span>Organizer Console</span>
@@ -471,7 +471,7 @@ export const DashboardPage: React.FC = () => {
           {user.role === 'admin' ? (
             <Link
               to="/admin"
-              className="px-4 py-2 rounded-xl bg-amber-950/40 hover:bg-amber-900/60 border border-amber-600/50 text-amber-300 text-xs font-bold uppercase tracking-wider flex items-center space-x-2 transition-all shadow-sm"
+              className="min-h-[44px] px-4 py-2 rounded-xl bg-amber-950/40 hover:bg-amber-900/60 border border-amber-600/50 text-amber-300 text-xs font-bold uppercase tracking-wider flex items-center space-x-2 transition-all shadow-sm"
             >
               <Sliders className="w-3.5 h-3.5 text-amber-400" />
               <span>Admin Portal</span>
@@ -481,7 +481,7 @@ export const DashboardPage: React.FC = () => {
           <button
             type="button"
             onClick={handleLogout}
-            className="px-4 py-2 rounded-xl bg-red-950/30 hover:bg-red-900/50 border border-red-800/50 text-red-300 text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 transition-all cursor-pointer"
+            className="min-h-[44px] px-4 py-2 rounded-xl bg-red-950/30 hover:bg-red-900/50 border border-red-800/50 text-red-300 text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 transition-all cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Sign Out</span>
@@ -490,11 +490,11 @@ export const DashboardPage: React.FC = () => {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex items-center space-x-2 border-b border-violet-900/30 pb-2 overflow-x-auto">
+      <div className="flex items-center space-x-2 border-b border-violet-900/30 pb-2 overflow-x-auto scrollbar-none">
         <button
           type="button"
           onClick={() => setActiveTab('overview')}
-          className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center space-x-2 cursor-pointer ${
+          className={`shrink-0 min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center space-x-2 cursor-pointer ${
             activeTab === 'overview'
               ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-[0_0_18px_rgba(139,92,246,0.45)] border border-violet-400/40'
               : 'text-gray-400 hover:text-white hover:bg-violet-950/40 border border-transparent'
@@ -507,7 +507,7 @@ export const DashboardPage: React.FC = () => {
         <button
           type="button"
           onClick={() => setActiveTab('profile')}
-          className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center space-x-2 cursor-pointer ${
+          className={`shrink-0 min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center space-x-2 cursor-pointer ${
             activeTab === 'profile'
               ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-[0_0_18px_rgba(139,92,246,0.45)] border border-violet-400/40'
               : 'text-gray-400 hover:text-white hover:bg-violet-950/40 border border-transparent'
@@ -520,7 +520,7 @@ export const DashboardPage: React.FC = () => {
         <button
           type="button"
           onClick={() => setActiveTab('accounts')}
-          className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center space-x-2 cursor-pointer ${
+          className={`shrink-0 min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center space-x-2 cursor-pointer ${
             activeTab === 'accounts'
               ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-[0_0_18px_rgba(139,92,246,0.45)] border border-violet-400/40'
               : 'text-gray-400 hover:text-white hover:bg-violet-950/40 border border-transparent'
@@ -533,7 +533,7 @@ export const DashboardPage: React.FC = () => {
         <button
           type="button"
           onClick={() => setActiveTab('teams')}
-          className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center space-x-2 cursor-pointer ${
+          className={`shrink-0 min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center space-x-2 cursor-pointer ${
             activeTab === 'teams'
               ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-[0_0_18px_rgba(139,92,246,0.45)] border border-violet-400/40'
               : 'text-gray-400 hover:text-white hover:bg-violet-950/40 border border-transparent'
@@ -546,7 +546,7 @@ export const DashboardPage: React.FC = () => {
         <button
           type="button"
           onClick={() => setActiveTab('tournaments')}
-          className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center space-x-2 cursor-pointer ${
+          className={`shrink-0 min-h-[44px] px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center space-x-2 cursor-pointer ${
             activeTab === 'tournaments'
               ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-[0_0_18px_rgba(139,92,246,0.45)] border border-violet-400/40'
               : 'text-gray-400 hover:text-white hover:bg-violet-950/40 border border-transparent'

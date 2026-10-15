@@ -34,15 +34,15 @@ export const Hero: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full text-center">
 
         {/* ── Pill badge ───────────────────────────────────────────────── */}
-        <div className="inline-flex items-center space-x-2.5 px-5 py-2 rounded-full border border-violet-500/30 bg-gradient-to-r from-violet-950/60 via-slate-900/60 to-cyan-950/60 backdrop-blur-sm text-xs sm:text-sm text-cyan-300 font-semibold mb-8 shadow-[0_0_24px_rgba(139,92,246,0.20)] animate-entrance">
-          <Flame className="w-4 h-4 text-violet-400 animate-pulse" />
+        <div className="inline-flex flex-wrap items-center justify-center gap-1.5 sm:gap-2.5 px-3.5 py-1.5 sm:px-5 sm:py-2 rounded-full border border-violet-500/30 bg-gradient-to-r from-violet-950/60 via-slate-900/60 to-cyan-950/60 backdrop-blur-sm text-[11px] sm:text-sm text-cyan-300 font-semibold mb-6 sm:mb-8 shadow-[0_0_24px_rgba(139,92,246,0.20)] animate-entrance max-w-full">
+          <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-violet-400 animate-pulse shrink-0" />
           <span>India's Community Esports Tournament Engine</span>
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-emerald-300 font-medium">Free to Compete</span>
+          <span className="hidden xs:inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+          <span className="hidden xs:inline text-emerald-300 font-medium">Free to Compete</span>
         </div>
 
         {/* ── Main headline ────────────────────────────────────────────── */}
-        <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-[-0.03em] text-white uppercase max-w-5xl mx-auto leading-[0.92] animate-entrance" style={{ animationDelay: '80ms' }}>
+        <h1 className="text-3xl xs:text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-[-0.03em] text-white uppercase max-w-5xl mx-auto leading-[0.96] sm:leading-[0.92] animate-entrance break-words" style={{ animationDelay: '80ms' }}>
           COMPETE.{' '}
           <span className="inline-block">CONQUER.</span>
           <br />
@@ -52,7 +52,7 @@ export const Hero: React.FC = () => {
         </h1>
 
         {/* ── Subtitle ─────────────────────────────────────────────────── */}
-        <p className="mt-7 text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed animate-entrance" style={{ animationDelay: '160ms' }}>
+        <p className="mt-5 sm:mt-7 text-sm sm:text-lg md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed animate-entrance px-2" style={{ animationDelay: '160ms' }}>
           The next-generation tournament platform built for Indian competitors.
           Automated brackets, encrypted room credentials, and verifiable leaderboards
           for{' '}

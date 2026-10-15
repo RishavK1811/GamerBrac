@@ -165,6 +165,7 @@ export interface ParticipantResponse {
 export interface MyRegistrationItem {
   participant_id: string;
   tournament_id: string;
+  user_id?: string | null;
   tournament_title: string;
   game_title: string;
   format: string;

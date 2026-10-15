@@ -98,16 +98,16 @@ export const Header: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className="flex flex-col leading-none">
+            <div className="flex flex-col leading-none min-w-0">
               <div className="flex items-center space-x-1.5">
-                <span className="text-[1.1rem] font-black tracking-[0.12em] bg-gradient-to-r from-violet-300 via-cyan-200 to-white bg-clip-text text-transparent uppercase">
+                <span className="text-base sm:text-[1.1rem] font-black tracking-[0.12em] bg-gradient-to-r from-violet-300 via-cyan-200 to-white bg-clip-text text-transparent uppercase truncate">
                   GamerBrac
                 </span>
-                <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-violet-950 text-violet-300 border border-violet-700/50 uppercase tracking-widest">
+                <span className="text-[8px] sm:text-[9px] font-black px-1.5 py-0.5 rounded bg-violet-950 text-violet-300 border border-violet-700/50 uppercase tracking-widest shrink-0">
                   INDIA
                 </span>
               </div>
-              <span className="text-[10px] text-gray-500 tracking-wider font-medium mt-0.5">
+              <span className="text-[9px] sm:text-[10px] text-gray-500 tracking-wider font-medium mt-0.5 truncate hidden sm:block">
                 Esports Tournament Engine
               </span>
             </div>
@@ -280,7 +280,7 @@ export const Header: React.FC = () => {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-[#111422] border border-transparent hover:border-violet-800/40 focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 rounded-xl text-gray-400 hover:text-white hover:bg-[#111422] border border-transparent hover:border-violet-800/40 focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all cursor-pointer"
               aria-label="Toggle navigation menu"
               aria-expanded={mobileMenuOpen}
             >
@@ -292,29 +292,29 @@ export const Header: React.FC = () => {
 
       {/* ── Mobile menu ──────────────────────────────────────────────── */}
       {mobileMenuOpen && (
-        <div className="md:hidden card-glass-heavy border-b border-violet-900/30 px-4 pt-3 pb-5 space-y-1 animate-entrance">
+        <div id="mobile-nav-menu" className="md:hidden card-glass-heavy border-b border-violet-900/30 px-4 pt-3 pb-5 space-y-1 animate-entrance max-h-[calc(100vh-4rem)] overflow-y-auto">
           <Link
             to="/tournaments"
             onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-200 hover:bg-violet-900/20 hover:text-white transition-all"
+            className="min-h-[44px] flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-200 hover:bg-violet-900/20 hover:text-white transition-all"
           >
-            <Swords className="w-4 h-4 text-violet-400" />
+            <Swords className="w-4 h-4 text-violet-400 shrink-0" />
             <span>Tournaments</span>
           </Link>
           <a
             href={isHome ? '#games' : '/#games'}
             onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-200 hover:bg-violet-900/20 hover:text-white transition-all"
+            className="min-h-[44px] flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-200 hover:bg-violet-900/20 hover:text-white transition-all"
           >
-            <Trophy className="w-4 h-4 text-cyan-400" />
+            <Trophy className="w-4 h-4 text-cyan-400 shrink-0" />
             <span>Games</span>
           </a>
           <a
             href={isHome ? '#roles' : '/#roles'}
             onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-200 hover:bg-violet-900/20 hover:text-white transition-all"
+            className="min-h-[44px] flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-200 hover:bg-violet-900/20 hover:text-white transition-all"
           >
-            <Users className="w-4 h-4 text-violet-400" />
+            <Users className="w-4 h-4 text-violet-400 shrink-0" />
             <span>Community</span>
           </a>
 
@@ -325,48 +325,55 @@ export const Header: React.FC = () => {
                 <Link
                   to="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="py-2.5 rounded-xl text-center text-xs font-semibold bg-[#111422] text-white border border-violet-800/40 flex items-center justify-center space-x-1.5"
+                  className="min-h-[44px] py-2.5 rounded-xl text-center text-xs font-semibold bg-[#111422] text-white border border-violet-800/40 flex items-center justify-center space-x-1.5"
                 >
-                  <LogIn className="w-3.5 h-3.5 text-cyan-400" />
+                  <LogIn className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
                   <span>Sign In</span>
                 </Link>
                 <Link
                   to="/register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="py-2.5 rounded-xl text-center text-xs font-bold bg-gradient-to-r from-violet-600 to-indigo-600 text-white flex items-center justify-center space-x-1.5"
+                  className="min-h-[44px] py-2.5 rounded-xl text-center text-xs font-bold bg-gradient-to-r from-violet-600 to-indigo-600 text-white flex items-center justify-center space-x-1.5"
                 >
-                  <UserPlus className="w-3.5 h-3.5" />
+                  <UserPlus className="w-3.5 h-3.5 shrink-0" />
                   <span>Register</span>
                 </Link>
               </div>
             ) : (
               <div className="space-y-1">
-                <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-[#111422] border border-violet-800/30">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-xs font-black text-white">
+                <div className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-[#111422] border border-violet-800/30">
+                  <div className="flex items-center space-x-2 min-w-0">
+                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-xs font-black text-white shrink-0">
                       {(user?.profile?.display_name || user?.username || 'U')[0].toUpperCase()}
                     </div>
-                    <span className="font-bold text-white text-xs">{user?.username}</span>
+                    <span className="font-bold text-white text-xs truncate">{user?.profile?.display_name || user?.username}</span>
                   </div>
-                  <span className="text-[9px] font-black px-1.5 py-0.5 rounded uppercase bg-violet-950 text-cyan-300 border border-violet-700/50">
-                    {user?.role}
-                  </span>
+                  <div className="flex items-center space-x-2 shrink-0">
+                    {unreadCount > 0 && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-700/50 font-bold">
+                        {unreadCount} new
+                      </span>
+                    )}
+                    <span className="text-[9px] font-black px-1.5 py-0.5 rounded uppercase bg-violet-950 text-cyan-300 border border-violet-700/50">
+                      {user?.role}
+                    </span>
+                  </div>
                 </div>
                 <Link
                   to="/dashboard"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-300 hover:bg-violet-900/20 hover:text-cyan-300 transition-all"
+                  className="min-h-[44px] flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-300 hover:bg-violet-900/20 hover:text-cyan-300 transition-all"
                 >
-                  <LayoutDashboard className="w-4 h-4 text-cyan-400" />
+                  <LayoutDashboard className="w-4 h-4 text-cyan-400 shrink-0" />
                   <span>Player Dashboard</span>
                 </Link>
                 {(user?.role === 'organizer' || user?.role === 'admin') && (
                   <Link
                     to="/organizer"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-300 hover:bg-violet-900/20 hover:text-cyan-300 transition-all"
+                    className="min-h-[44px] flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-300 hover:bg-violet-900/20 hover:text-cyan-300 transition-all"
                   >
-                    <Briefcase className="w-4 h-4 text-violet-400" />
+                    <Briefcase className="w-4 h-4 text-violet-400 shrink-0" />
                     <span>Organizer Console</span>
                   </Link>
                 )}
@@ -374,18 +381,18 @@ export const Header: React.FC = () => {
                   <Link
                     to="/admin"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-amber-300 hover:bg-amber-950/20 transition-all"
+                    className="min-h-[44px] flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-amber-300 hover:bg-amber-950/20 transition-all"
                   >
-                    <Sliders className="w-4 h-4 text-amber-400" />
+                    <Sliders className="w-4 h-4 text-amber-400 shrink-0" />
                     <span>Admin Portal</span>
                   </Link>
                 )}
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-400 hover:bg-red-950/20 transition-all cursor-pointer"
+                  className="w-full min-h-[44px] flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-400 hover:bg-red-950/20 transition-all cursor-pointer"
                 >
-                  <LogOut className="w-4 h-4" />
+                  <LogOut className="w-4 h-4 shrink-0" />
                   <span>Sign Out</span>
                 </button>
               </div>
@@ -394,7 +401,7 @@ export const Header: React.FC = () => {
             <Link
               to="/dashboard"
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full flex items-center justify-center space-x-2 py-3 rounded-xl text-xs font-bold uppercase tracking-wide btn-neon-shimmer text-white"
+              className="w-full min-h-[44px] flex items-center justify-center space-x-2 py-3 rounded-xl text-xs font-bold uppercase tracking-wide btn-neon-shimmer text-white shadow-[0_0_20px_rgba(139,92,246,0.4)]"
             >
               <span>Enter Arena</span>
               <ChevronRight className="w-3.5 h-3.5" />

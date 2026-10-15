@@ -530,17 +530,17 @@ export const OrganizerPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 animate-entrance">
       {/* Header Banner */}
-      <div className="p-8 rounded-3xl card-glass-heavy border border-violet-700/35 shadow-[0_0_40px_rgba(139,92,246,0.18)] flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
+      <div className="p-4 sm:p-8 rounded-2xl sm:rounded-3xl card-glass-heavy border border-violet-700/35 shadow-[0_0_40px_rgba(139,92,246,0.18)] flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-80 h-40 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="flex items-center space-x-5 relative z-10">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-violet-600 via-indigo-600 to-cyan-400 p-[1.5px] shadow-[0_0_24px_rgba(139,92,246,0.4)]">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5 relative z-10">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-violet-600 via-indigo-600 to-cyan-400 p-[1.5px] shadow-[0_0_24px_rgba(139,92,246,0.4)] shrink-0 flex items-center justify-center">
             <div className="w-full h-full bg-[#0a0b14] rounded-[14px] flex items-center justify-center text-cyan-400">
-              <Briefcase className="w-8 h-8" />
+              <Briefcase className="w-7 h-7 sm:w-8 sm:h-8" />
             </div>
           </div>
           <div className="space-y-1">
-            <div className="flex items-center space-x-2.5">
-              <h1 className="text-2xl font-black text-white tracking-tight">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
                 Tournament Organizer Console
               </h1>
               <span className="text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider bg-emerald-950/80 border border-emerald-600/60 text-emerald-300 flex items-center space-x-1.5 shadow-[0_0_12px_rgba(16,185,129,0.3)]">
@@ -554,17 +554,17 @@ export const OrganizerPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center space-x-3 relative z-10">
+        <div className="flex flex-wrap items-center gap-2.5 relative z-10">
           <button
             onClick={() => setShowCreateModal(true)}
-            className="px-5 py-2.5 rounded-xl btn-neon-shimmer text-white text-xs font-bold uppercase tracking-wider flex items-center space-x-2 transition-all shadow-[0_0_20px_rgba(139,92,246,0.4)] hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] cursor-pointer"
+            className="min-h-[44px] px-5 py-2.5 rounded-xl btn-neon-shimmer text-white text-xs font-bold uppercase tracking-wider flex items-center space-x-2 transition-all shadow-[0_0_20px_rgba(139,92,246,0.4)] hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Create Tournament</span>
           </button>
           <button
             onClick={fetchTournaments}
-            className="p-2.5 rounded-xl bg-[#111422] hover:bg-[#1a1d30] border border-violet-800/40 text-gray-400 hover:text-white transition-colors cursor-pointer"
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center p-2.5 rounded-xl bg-[#111422] hover:bg-[#1a1d30] border border-violet-800/40 text-gray-400 hover:text-white transition-colors cursor-pointer"
             title="Refresh Data"
           >
             <RefreshCw className="w-4 h-4" />
@@ -587,10 +587,10 @@ export const OrganizerPage: React.FC = () => {
       )}
 
       {/* Navigation Tabs */}
-      <div className="flex border-b border-violet-900/30 space-x-6 text-sm font-semibold">
+      <div className="flex border-b border-violet-900/30 space-x-4 sm:space-x-6 text-xs sm:text-sm font-semibold overflow-x-auto scrollbar-none">
         <button
           onClick={() => setActiveTab('tournaments')}
-          className={`pb-3 flex items-center space-x-2 transition-colors relative ${
+          className={`shrink-0 min-h-[44px] pb-3 flex items-center space-x-2 transition-colors relative cursor-pointer ${
             activeTab === 'tournaments' ? 'text-cyan-400' : 'text-gray-400 hover:text-white'
           }`}
         >
@@ -603,7 +603,7 @@ export const OrganizerPage: React.FC = () => {
 
         <button
           onClick={() => setActiveTab('matches')}
-          className={`pb-3 flex items-center space-x-2 transition-colors relative ${
+          className={`shrink-0 min-h-[44px] pb-3 flex items-center space-x-2 transition-colors relative cursor-pointer ${
             activeTab === 'matches' ? 'text-cyan-400' : 'text-gray-400 hover:text-white'
           }`}
         >
@@ -616,7 +616,7 @@ export const OrganizerPage: React.FC = () => {
 
         <button
           onClick={() => setActiveTab('submissions')}
-          className={`pb-3 flex items-center space-x-2 transition-colors relative ${
+          className={`shrink-0 min-h-[44px] pb-3 flex items-center space-x-2 transition-colors relative cursor-pointer ${
             activeTab === 'submissions' ? 'text-cyan-400' : 'text-gray-400 hover:text-white'
           }`}
         >
@@ -685,9 +685,13 @@ export const OrganizerPage: React.FC = () => {
 
               {/* Right Column: Selected Tournament Controls & Participant Roster */}
               <div className="lg:col-span-2 space-y-6">
-                {loadingDetail || !selectedTournamentDetail ? (
+                {loadingDetail ? (
                   <div className="p-8 rounded-2xl bg-[#0e101a] border border-violet-900/30 text-center text-xs text-gray-400">
                     Loading tournament details...
+                  </div>
+                ) : !selectedTournamentDetail ? (
+                  <div className="p-8 rounded-2xl bg-[#0e101a] border border-violet-900/30 text-center text-xs text-gray-400">
+                    Select a tournament to view details and manage participants.
                   </div>
                 ) : (
                   <div className="p-6 rounded-2xl bg-[#0e101a] border border-violet-900/30 space-y-6">
@@ -1089,7 +1093,11 @@ export const OrganizerPage: React.FC = () => {
                 <Trophy className="w-5 h-5 text-cyan-400" />
                 <span>Create New Tournament</span>
               </h3>
-              <button onClick={() => setShowCreateModal(false)} className="text-gray-400 hover:text-white">
+              <button
+                onClick={() => setShowCreateModal(false)}
+                className="min-w-[44px] min-h-[44px] -mr-2 flex items-center justify-center text-gray-400 hover:text-white cursor-pointer"
+                aria-label="Close modal"
+              >
                 <XCircle className="w-5 h-5" />
               </button>
             </div>
@@ -1280,13 +1288,17 @@ export const OrganizerPage: React.FC = () => {
       {/* SCHEDULE MATCH MODAL */}
       {showScheduleMatchModal && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-md rounded-3xl bg-[#0e101a] border border-violet-900/60 p-6 space-y-4 shadow-2xl">
+          <div className="w-full max-w-md rounded-2xl sm:rounded-3xl bg-[#0e101a] border border-violet-900/60 p-4 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-2 border-b border-violet-900/30">
               <h3 className="text-base font-bold text-white flex items-center space-x-2">
                 <Swords className="w-5 h-5 text-cyan-400" />
                 <span>Schedule Tournament Match</span>
               </h3>
-              <button onClick={() => setShowScheduleMatchModal(false)} className="text-gray-400 hover:text-white">
+              <button
+                onClick={() => setShowScheduleMatchModal(false)}
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-400 hover:text-white cursor-pointer"
+                aria-label="Close schedule modal"
+              >
                 <XCircle className="w-5 h-5" />
               </button>
             </div>
@@ -1363,13 +1375,17 @@ export const OrganizerPage: React.FC = () => {
       {/* AES CREDENTIALS MODAL */}
       {showCredentialModal && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-md rounded-3xl bg-[#0e101a] border border-violet-900/60 p-6 space-y-4 shadow-2xl">
+          <div className="w-full max-w-md rounded-2xl sm:rounded-3xl bg-[#0e101a] border border-violet-900/60 p-4 sm:p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-2 border-b border-violet-900/30">
               <h3 className="text-base font-bold text-white flex items-center space-x-2">
                 <KeyRound className="w-5 h-5 text-cyan-400" />
                 <span>Configure Room Credentials</span>
               </h3>
-              <button onClick={() => setShowCredentialModal(false)} className="text-gray-400 hover:text-white">
+              <button
+                onClick={() => setShowCredentialModal(false)}
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center text-gray-400 hover:text-white cursor-pointer"
+                aria-label="Close credentials modal"
+              >
                 <XCircle className="w-5 h-5" />
               </button>
             </div>
@@ -1462,13 +1478,17 @@ export const OrganizerPage: React.FC = () => {
       {/* VIEW DECRYPTED CREDENTIALS MODAL */}
       {showViewCredModal && activeCredentials && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-sm rounded-3xl bg-[#0e101a] border border-emerald-900/60 p-6 space-y-4 shadow-2xl">
+          <div className="w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-2xl sm:rounded-3xl bg-[#0e101a] border border-emerald-900/60 p-5 sm:p-6 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between pb-2 border-b border-violet-900/30">
               <h3 className="text-base font-bold text-white flex items-center space-x-2">
                 <KeyRound className="w-5 h-5 text-emerald-400" />
                 <span>Room Credentials</span>
               </h3>
-              <button onClick={() => setShowViewCredModal(false)} className="text-gray-400 hover:text-white">
+              <button
+                onClick={() => setShowViewCredModal(false)}
+                className="min-w-[44px] min-h-[44px] -mr-2 flex items-center justify-center text-gray-400 hover:text-white cursor-pointer"
+                aria-label="Close modal"
+              >
                 <XCircle className="w-5 h-5" />
               </button>
             </div>
@@ -1492,7 +1512,7 @@ export const OrganizerPage: React.FC = () => {
 
             <button
               onClick={() => setShowViewCredModal(false)}
-              className="w-full py-2 rounded-xl bg-[#141624] hover:bg-[#1a1d30] text-xs font-semibold text-gray-300"
+              className="w-full min-h-[44px] py-2.5 rounded-xl bg-[#141624] hover:bg-[#1a1d30] text-xs font-semibold text-gray-300"
             >
               Close
             </button>
@@ -1503,13 +1523,17 @@ export const OrganizerPage: React.FC = () => {
       {/* SCORE SUBMISSION REVIEW MODAL */}
       {showReviewModal && selectedSubmission && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-md rounded-3xl bg-[#0e101a] border border-violet-900/60 p-6 space-y-4 shadow-2xl">
+          <div className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl sm:rounded-3xl bg-[#0e101a] border border-violet-900/60 p-5 sm:p-6 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between pb-2 border-b border-violet-900/30">
               <h3 className="text-base font-bold text-white flex items-center space-x-2">
                 <FileCheck className="w-5 h-5 text-cyan-400" />
                 <span>Verify Score Submission</span>
               </h3>
-              <button onClick={() => setShowReviewModal(false)} className="text-gray-400 hover:text-white">
+              <button
+                onClick={() => setShowReviewModal(false)}
+                className="min-w-[44px] min-h-[44px] -mr-2 flex items-center justify-center text-gray-400 hover:text-white cursor-pointer"
+                aria-label="Close modal"
+              >
                 <XCircle className="w-5 h-5" />
               </button>
             </div>
@@ -1547,11 +1571,11 @@ export const OrganizerPage: React.FC = () => {
               />
             </div>
 
-            <div className="flex items-center justify-end space-x-2 pt-3 border-t border-violet-900/20">
+            <div className="flex flex-wrap items-center justify-end gap-2 pt-3 border-t border-violet-900/20">
               <button
                 onClick={() => handleReviewScore('rejected')}
                 disabled={isSubmitting}
-                className="px-4 py-2 rounded-xl bg-rose-950 hover:bg-rose-900 border border-rose-800 text-rose-300 text-xs font-bold flex items-center space-x-1"
+                className="min-h-[40px] px-4 py-2 rounded-xl bg-rose-950 hover:bg-rose-900 border border-rose-800 text-rose-300 text-xs font-bold flex items-center space-x-1"
               >
                 <FileX className="w-3.5 h-3.5" />
                 <span>Reject</span>
@@ -1559,7 +1583,7 @@ export const OrganizerPage: React.FC = () => {
               <button
                 onClick={() => handleReviewScore('approved')}
                 disabled={isSubmitting}
-                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center space-x-1"
+                className="min-h-[40px] px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center space-x-1"
               >
                 <CheckCircle className="w-3.5 h-3.5" />
                 <span>Approve & Verify</span>
